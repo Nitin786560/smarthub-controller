@@ -21,22 +21,16 @@ jobs:
 
       - name: Install ESP8266 Core Architecture
         run: |
-          # --- TOTAL CONFIG RESET FIX ---
-          # 1. Force clear any broken local config files or cache directories entirely
-          rm -rf ~/.arduino15
+          # Force clears any loose runtime caches
+          rm -rf ~/.arduino15/package_index.json*
+          rm -rf ~/.arduino15/cache/*
 
-          # 2. Re-initialize a blank, clean configuration file profile layout
-          arduino-cli config init --overwrite
-
-          # 3. Strictly bind the board URL setting directly into the CLI variables layer
-          arduino-cli config set board_manager.additional_urls https://esp8266.com
-
-          # 4. Sync indices cleanly matching our direct profile target
-          arduino-cli core update-index
+          # --- FORCED INLINE OVERRIDE FIX ---
+          # We pass the url directly as an inline variable parameter. This forces the system to ignore background settings.
+          arduino-cli core update-index --additional-urls https://esp8266.com
           
-          # Retry loop with a 15-second gap handles minor network drops smoothly
           for i in {1..3}; do
-            arduino-cli core install esp8266:esp8266 && break || sleep 15
+            arduino-cli core install esp8266:esp8266 --additional-urls https://esp8266.com && break || sleep 15
           done
 
       - name: Restructure Project Directory for CLI Standard
@@ -46,7 +40,8 @@ jobs:
 
       - name: Compile Code into Binary
         run: |
-          arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 ./build_workspace/smarthub --output-dir ./build_out
+          # We pass the URL here as well to keep the compiler perfectly isolated from background caches
+          arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 --additional-urls https://esp8266.com ./build_workspace/smarthub --output-dir ./build_out
 
       - name: Deploy Firmware Update Directly to Repository Root
         run: |
