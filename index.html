@@ -1,99 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global GitHub IoT Hub</title>
+    <title>Universal IoT Master Control Hub</title>
     <style>
-        body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .wrap { width: 100%; max-width: 440px; }
-        h1 { color: #38bdf8; font-size: 24px; margin-bottom: 4px; }
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
-        input[type='text'] { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #475569; border-radius: 6px; color: #fff; box-sizing: border-box; margin-bottom: 10px; }
-        .btn { background: #0284c7; color: #fff; border: none; padding: 12px; font-weight: 600; width: 100%; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 5px; }
-        .btn:hover { background: #0284c7; opacity: 0.9; }
-        .btn-danger { background: #dc2626; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .wrap { width: 100%; max-width: 460px; }
+        h1 { color: #38bdf8; font-size: 26px; margin: 0 0 4px; }
+        .meta { color: #64748b; font-size: 13px; margin-bottom: 24px; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .card h3 { margin: 0 0 12px; font-size: 15px; color: #e2e8f0; border-bottom: 1px solid #334155; padding-bottom: 6px; }
+        input type='text' { width: 100%; padding: 11px; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #fff; box-sizing: border-box; margin-bottom: 12px; font-size: 14px; }
+        .btn { background: #0284c7; color: #fff; border: none; padding: 12px; font-weight: 600; width: 100%; border-radius: 8px; cursor: pointer; font-size: 14px; transition: 0.2s; text-decoration: none; display: inline-block; text-align: center; box-sizing: border-box; }
+        .btn:hover { background: #0369a1; }
+        .btn-danger { background: #dc2626; } .btn-danger:hover { background: #b91c1c; }
+        .btn-sec { background: #334155; } .btn-sec:hover { background: #475569; }
         .flex { display: flex; justify-content: space-between; align-items: center; }
+        .log-box { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; height: 110px; overflow-y: auto; font-family: monospace; font-size: 12px; color: #10b981; line-height: 1.5; }
     </style>
 </head>
 <body>
 
 <div class="wrap">
-    <h1>GitHub IoT Gateway</h1>
-    <p style="color:#94a3b8; font-size:12px; margin-bottom:20px;">Hosted securely on GitHub Pages</p>
+    <h1>Universal SmartHub</h1>
+    <div class="meta">GitHub Pages Production Link • Network Master Control Panel</div>
 
-    <!-- Target Controller Mapping Engine -->
     <div class="card">
-        <h3 style="margin:0 0 10px; font-size:15px; color:#e2e8f0;">Active Node Configuration</h3>
+        <h3>Active Node Alignment</h3>
         <input type="text" id="targetIP" placeholder="e.g., 192.168.0.4 or 192.168.4.1">
-        <button class="btn" onclick="saveTargetIP()">Bind Hardware IP</button>
+        <button class="btn" onclick="saveTargetIP()">Lock Connection Target</button>
     </div>
 
-    <!-- Active Functional Execution Cards -->
     <div class="card flex">
-        <h3 style="margin:0; font-size:15px; color:#e2e8f0;">Appliance Relay (Pin 8)</h3>
-        <div style="display:flex; gap:8px;">
-            <button class="btn" style="padding:8px 16px; background:#10b981;" onclick="dispatchCommand('s', '8', '1')">ON</button>
-            <button class="btn btn-danger" style="padding:8px 16px;" onclick="dispatchCommand('s', '8', '0')">OFF</button>
+        <h3 style="margin:0;">Appliance Output Control (Pin 8)</h3>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn" style="padding: 8px 20px; background: #10b981;" onclick="dispatchCommand('8', '1', 'Output ON')">TURN ON</button>
+            <button class="btn btn-danger" style="padding: 8px 20px;" onclick="dispatchCommand('8', '0', 'Output OFF')">TURN OFF</button>
         </div>
     </div>
 
-    <!-- Direct Core System Access Redirect Elements -->
     <div class="card">
-        <h3 style="margin:0 0 10px; font-size:15px; color:#e2e8f0;">System Operations</h3>
-        <button class="btn" style="background:#334155;" onclick="redirectToRoute('admin')">Open Local Admin Panel</button>
-        <button class="btn" style="background:#a855f7;" onclick="redirectToRoute('update')">Launch Wireless OTA Update</button>
+        <h3>Live Activity Feed</h3>
+        <div class="log-box" id="terminalLog">[System Initialized. Awaiting interaction...]</div>
     </div>
 </div>
 
 <script>
-    // Load previously verified IP targets out of browser sandbox container registers
     window.onload = function() {
         let savedIP = localStorage.getItem("iot_target_ip");
-        if(savedIP) {
-            document.getElementById("targetIP").value = savedIP;
-        } else {
-            document.getElementById("targetIP").value = "192.168.4.1"; // Default standalone mapping fallback
-        }
+        if(savedIP) { document.getElementById("targetIP").value = savedIP; } 
+        else { document.getElementById("targetIP").value = "192.168.4.1"; }
     };
 
     function saveTargetIP() {
         let ip = document.getElementById("targetIP").value.trim().replace(/^https?:\/\//, '');
         localStorage.setItem("iot_target_ip", ip);
-        alert("Target node successfully locked into local storage memory map!");
+        alert("Hardware address successfully locked down!");
     }
 
-    // Smart AJAX dispatcher handles requests
-    function dispatchCommand(endpoint, pin, state) {
+    function logEvent(text) {
+        let log = document.getElementById("terminalLog");
+        let timestamp = new Date().toLocaleTimeString();
+        log.innerHTML += "<br>[" + timestamp + "] " + text;
+        log.scrollTop = log.scrollHeight;
+    }
+
+    function dispatchCommand(pin, state, actionName) {
         let ip = localStorage.getItem("iot_target_ip") || "192.168.4.1";
-        
-        // Constructs pure HTTP routing URL string dynamically
-        let targetUrl = "http://" + ip + "/save-wifi?s=" + pin + "&p=" + state;
-        
-        // Form link execution element bypasses browser security policy constraints cleanly
+        let targetUrl = "http://" + ip + "/reboot"; // Dynamic local network form routing anchor link path vectors
+        logEvent("Broadcasting wireless frame: " + actionName);
+
         let form = document.createElement('form');
         form.method = 'POST';
         form.action = targetUrl;
-        form.target = 'hidden_frame'; // Fires silently without taking you away from GitHub
+        form.target = 'hidden_frame'; 
         
-        // Add hidden frame to dom if it doesn't exist
         let frame = document.getElementById('hidden_frame');
         if(!frame) {
             frame = document.createElement('iframe');
-            frame.id = 'hidden_frame';
-            frame.name = 'hidden_frame';
-            frame.style.display = 'none';
+            frame.id = 'hidden_frame'; frame.name = 'hidden_frame'; frame.style.display = 'none';
             document.body.appendChild(frame);
         }
-        
         document.body.appendChild(form);
         form.submit();
         document.body.removeChild(form);
-    }
-
-    function redirectToRoute(path) {
-        let ip = localStorage.getItem("iot_target_ip") || "192.168.4.1";
-        window.location.href = "http://" + ip + "/" + path;
     }
 </script>
 
