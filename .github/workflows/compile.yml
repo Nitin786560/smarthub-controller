@@ -16,22 +16,25 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@v4
 
-      - name: Setup Arduino CLI Compiler Environment
-        uses: arduino/setup-arduino-cli@v2
+      # --- TOTAL LOGICAL SANDBOX FIX ---
+      # We construct an entirely new config directory inside /tmp to fully bypass any system cache
+      - name: Initialize Isolated Environment
+        run: |
+          mkdir -p /tmp/arduino_home
+          mkdir -p /tmp/arduino_data
+          curl -fsSL https://githubusercontent.com | sh
+          sudo mv bin/arduino-cli /usr/local/bin/
 
       - name: Install ESP8266 Core Architecture
+        env:
+          ARDUINO_DATA_DIR: /tmp/arduino_data
+          ARDUINO_DOWNLOADS_DIR: /tmp/arduino_home/downloads
+          ARDUINO_USER_DIR: /tmp/arduino_home/user
         run: |
-          # Force clears any loose runtime caches
-          rm -rf ~/.arduino15/package_index.json*
-          rm -rf ~/.arduino15/cache/*
-
-          # --- FORCED INLINE OVERRIDE FIX ---
-          # We pass the url directly as an inline variable parameter. This forces the system to ignore background settings.
+          # Explicitly set the configuration using environment flags
+          arduino-cli config init --overwrite
           arduino-cli core update-index --additional-urls https://esp8266.com
-          
-          for i in {1..3}; do
-            arduino-cli core install esp8266:esp8266 --additional-urls https://esp8266.com && break || sleep 15
-          done
+          arduino-cli core install esp8266:esp8266 --additional-urls https://esp8266.com
 
       - name: Restructure Project Directory for CLI Standard
         run: |
@@ -39,9 +42,12 @@ jobs:
           cp smarthub.ino build_workspace/smarthub/smarthub.ino
 
       - name: Compile Code into Binary
+        env:
+          ARDUINO_DATA_DIR: /tmp/arduino_data
+          ARDUINO_DOWNLOADS_DIR: /tmp/arduino_home/downloads
+          ARDUINO_USER_DIR: /tmp/arduino_home/user
         run: |
-          # We pass the URL here as well to keep the compiler perfectly isolated from background caches
-          arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 --additional-urls https://esp8266.com ./build_workspace/smarthub --output-dir ./build_out
+          arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 ./build_workspace/smarthub --output-dir ./build_out
 
       - name: Deploy Firmware Update Directly to Repository Root
         run: |
@@ -53,3 +59,4 @@ jobs:
           git add firmware.bin
           git diff-index --quiet HEAD || git commit -m "Automated cloud compile: firmware.bin updated [Skip CI]"
           git push origin HEAD:${{ github.ref }}
+
