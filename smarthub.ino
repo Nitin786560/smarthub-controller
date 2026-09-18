@@ -8,7 +8,7 @@ ESP8266WebServer server(80);
 // ====================================================================
 // HARDCODED PROFILE DEFINITIONS & GLOBAL VERSION REGISTRY
 // ====================================================================
-const String HARDWARE_VERSION = "1.0.0"; // Increment this when uploading newer code to GitHub!
+const String HARDWARE_VERSION = "1.0.1"; // Increment this when uploading newer code to GitHub!
 
 const char* default_home_ssid = "YOUR_HOME_WIFI_NAME";  
 const char* default_home_pass = "YOUR_HOME_PASSWORD";   
