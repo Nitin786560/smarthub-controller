@@ -8,14 +8,13 @@ ESP8266WebServer server(80);
 // ====================================================================
 // HARDCODED PROFILE DEFINITIONS & GLOBAL VERSION REGISTRY
 // ====================================================================
-const String HARDWARE_VERSION = "1.0.1"; // Increment this when uploading newer code to GitHub!
+const String HARDWARE_VERSION = "1.0.0"; 
 
 const char* default_home_ssid = "YOUR_HOME_WIFI_NAME";  
 const char* default_home_pass = "YOUR_HOME_PASSWORD";   
 const char* fallback_redmi_ssid = "Redmi";
 const char* fallback_redmi_pass = "1234567890";
 
-// Direct Raw URL path pointing to your newly created repository root directory branch asset
 const char* global_github_bin_url = "http://githubusercontent.com";
 
 #define ADDR_CUSTOM_SSID 0
@@ -28,8 +27,13 @@ String fallback_ap_ssid = "SmartHub-NodeMCU"; String fallback_ap_pass = "1234567
 
 String active_net_status = "Scanning Networks...";
 unsigned long lastCloudPoll = 0;
-const long cloudPollInterval = 60000; // Look for automated GitHub firmware updates every 60 seconds
+const long cloudPollInterval = 60000; 
 
+// Hardware Output Mapping Tracker
+const int appliancePin = 5; // NodeMCU Pin D1 mapped safely to dynamic register values
+bool currentPinState = LOW;
+
+// --- Storage Read/Write Blocks ---
 void writeStringToEEPROM(int addr, String str) {
   byte len = str.length(); EEPROM.write(addr, len);
   for (int i = 0; i < len; i++) EEPROM.write(addr + 1 + i, str[i]);
@@ -50,10 +54,10 @@ void executeSmartNetworkHandshake() {
     if (WiFi.SSID(i) == String(redmi_ssid))         redmiSeen = true;
     if (custom_ssid.length() > 0 && WiFi.SSID(i) == custom_ssid) customSeen = true;
   }
-  if (homeSeen)       WiFi.begin(default_home_ssid, default_home_pass);
+  if (homeSeen)        WiFi.begin(default_home_ssid, default_home_pass);
   else if (redmiSeen)  WiFi.begin(fallback_redmi_ssid, fallback_redmi_pass);
   else if (customSeen) WiFi.begin(custom_ssid.c_str(), custom_pass.c_str());
-  else                WiFi.begin(default_home_ssid, default_home_pass);
+  else                 WiFi.begin(default_home_ssid, default_home_pass);
 
   unsigned long startWait = millis();
   while (WiFi.status() != WL_CONNECTED && millis() - startWait < 10000) { delay(400); }
@@ -63,21 +67,31 @@ void executeSmartNetworkHandshake() {
 void fetchGlobalGitHubUpdate() {
   if (WiFi.status() == WL_CONNECTED) {
     WiFiClientSecure client;
-    client.setInsecure(); // Permits connection without hardcoding thumbprint SSL certificates
-    
+    client.setInsecure(); 
     t_httpUpdate_return ret = ESPhttpUpdate.update(client, global_github_bin_url, HARDWARE_VERSION);
+  }
+}
 
-    switch (ret) {
-      case HTTP_UPDATE_FAILED:
-        Serial.printf("[OTA FAULT] Error: (%d): %s\n", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
-        break;
-      case HTTP_UPDATE_NO_UPDATES:
-        Serial.println("[OTA OK] System running latest code profile matching repository profile.");
-        break;
-      case HTTP_UPDATE_OK:
-        Serial.println("[OTA SUCCESS] Code block written cleanly! Swapping flash banks and restarting...");
-        break;
+// ====================================================================
+// CRITICAL SYNCHRONIZATION HOOK: Captures the clicks from your GitHub website
+// ====================================================================
+void handleWirelessCommandAPI() {
+  if (server.hasArg("s") && server.hasArg("p")) {
+    int targetState = server.arg("p").toInt(); // Extracts '1' for ON, '0' for OFF
+    
+    currentPinState = (targetState == 1) ? HIGH : LOW;
+    digitalWrite(appliancePin, currentPinState);
+    
+    // Pass execution token tracking packets immediately to the hardware line
+    if(currentPinState == HIGH) {
+      Serial.println("SET:8:1");
+    } else {
+      Serial.println("SET:8:0");
     }
+    
+    server.send(200, "text/plain", "OK");
+  } else {
+    server.send(400, "text/plain", "Bad Submission");
   }
 }
 
@@ -87,6 +101,7 @@ void handleLandingPage() {
   html += "<div class='wrap'><h1>Local Interface Portal</h1><div class='card'>";
   html += "<div class='row'><span>Active Gateway:</span> <span class='badge'>" + active_net_status + "</span></div>";
   html += "<div class='row'><span>Local Node Address:</span> <span>" + WiFi.localIP().toString() + "</span></div>";
+  html += "<div class='row'><span>Hardware Pin 8 Status:</span> <span>" + String(currentPinState ? "HIGH (ON)" : "LOW (OFF)") + "</span></div>";
   html += "<div class='row'><span>Running Firmware Build:</span> <span>v" + HARDWARE_VERSION + "</span></div></div>";
   html += "<form action='/reboot' method='POST'><button type='submit' class='btn' style='background:#dc2626;'>Restart NodeMCU</button></form></div></body></html>";
   server.send(200, "text/html", html);
@@ -96,6 +111,8 @@ void handleReboot() { server.send(200, "text/html", "<h2>Rebooting Core...</h2>"
 
 void setup() {
   Serial.begin(115200); EEPROM.begin(512);
+  pinMode(appliancePin, OUTPUT);
+  digitalWrite(appliancePin, currentPinState);
 
   String stored_master_ssid = readStringFromEEPROM(ADDR_MASTER_SSID);
   String stored_master_pass = readStringFromEEPROM(ADDR_MASTER_PASS);
@@ -111,6 +128,7 @@ void setup() {
   executeSmartNetworkHandshake();
 
   server.on("/", handleLandingPage);
+  server.on("/save-wifi", handleWirelessCommandAPI); // Direct API anchor integration link
   server.on("/reboot", handleReboot);
   server.begin();
 }
