@@ -40,20 +40,16 @@ jobs:
       - name: Scaffold CLI-Compliant Build Sandbox
         run: |
           mkdir -p build_dir
-
-          # Locate smarthub.ino whether it is in the root or a subfolder
           SKETCH_PATH=$(find . -maxdepth 3 -not -path '*/.*' -not -path './build_dir*' -name "*.ino" | head -n 1)
 
           if [ -z "$SKETCH_PATH" ]; then
-            echo "::error::No .ino file found in the repository!"
-            ls -la
+            echo "::error::No .ino file found in repository!"
             exit 1
           fi
 
           echo "Found sketch at: $SKETCH_PATH"
           cp "$SKETCH_PATH" build_dir/build_dir.ino
 
-          # Copy any supplementary headers or source files if present
           SKETCH_DIR=$(dirname "$SKETCH_PATH")
           shopt -s nullglob
           for ext in h hpp cpp c; do
