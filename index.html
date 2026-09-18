@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#020617">
-  <title>SmartHub Unified Cloud AI Core</title>
+  <title>SmartHub AI Ultimate Grid</title>
 
+  <!-- Google Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@600;700;800;900&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,700,1,0&display=swap" rel="stylesheet">
 
+  <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -24,6 +26,7 @@
       --primary-glow: rgba(56, 189, 248, 0.5);
       --success: #22c55e;
       --danger: #ef4444;
+      --warning: #f59e0b;
       --ai: #a855f7;
       --text: #ffffff;
       --text-dim: #cbd5e1;
@@ -43,12 +46,12 @@
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      padding: 16px 12px 32px 12px;
+      padding: 16px 12px 90px 12px;
     }
 
     .container {
       width: 100%;
-      max-width: 480px;
+      max-width: 500px;
       display: flex;
       flex-direction: column;
       gap: 14px;
@@ -63,11 +66,12 @@
       justify-content: center;
     }
 
+    /* Header */
     .app-header {
       background: rgba(11, 19, 41, 0.98);
       border: 2px solid var(--border);
       border-radius: var(--radius);
-      padding: 14px 18px;
+      padding: 12px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -89,6 +93,7 @@
       border-radius: 6px;
     }
 
+    /* Cards */
     .app-card {
       background: var(--surface);
       border: 2px solid var(--border);
@@ -100,34 +105,63 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
 
-    h3 {
-      font-size: 15px;
-      font-weight: 900;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+    .app-card-header {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 6px;
+      cursor: pointer;
     }
 
+    .app-card-title {
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .app-card-arrow {
+      transition: transform 0.25s;
+      font-size: 26px;
+      color: var(--text-dim);
+    }
+
+    .app-card.open .app-card-arrow {
+      transform: rotate(180deg);
+    }
+
+    .app-card-content {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+    }
+
+    .app-card.open .app-card-content {
+      display: flex;
+    }
+
+    /* Telemetry Grid */
     .tel-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
     }
 
     .tel-box {
       background: var(--card);
       border: 1.5px solid var(--border);
       border-radius: 12px;
-      padding: 8px 4px;
+      padding: 8px 2px;
       text-align: center;
     }
 
-    .tel-lbl { font-size: 13px; font-weight: 800; color: var(--text-dim); }
-    .tel-val { font-size: 18px; font-weight: 900; font-family: monospace; color: var(--primary); margin-top: 2px; }
+    .tel-lbl { font-size: 12px; font-weight: 800; color: var(--text-dim); }
+    .tel-val { font-size: 16px; font-weight: 900; font-family: monospace; color: var(--primary); margin-top: 2px; }
 
+    /* Action Buttons */
     .btn-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -135,10 +169,10 @@
     }
 
     .btn-action {
-      height: 52px;
+      height: 50px;
       border-radius: 12px;
       border: none;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 900;
       cursor: pointer;
       display: flex;
@@ -148,25 +182,29 @@
       color: #fff;
       transition: transform 0.15s, filter 0.15s;
     }
-    .btn-action:active { transform: scale(0.96); filter: brightness(1.2); }
+    .btn-action:active { transform: scale(0.96); }
 
     .btn-on { background: var(--success); }
     .btn-off { background: var(--danger); }
-    .btn-ai { background: var(--ai); width: 100%; }
-    .btn-ota { background: var(--primary); color: #000; width: 100%; }
+    .btn-p { background: var(--primary); color: #000; }
+    .btn-ai { background: var(--ai); color: #fff; }
+    .btn-w { background: var(--warning); color: #000; }
 
-    input[type="text"] {
+    /* Inputs */
+    input[type="text"], input[type="password"], select {
       width: 100%;
-      height: 52px;
+      height: 50px;
       background: var(--card);
       border: 2px solid var(--border);
       border-radius: 12px;
-      padding: 0 16px;
+      padding: 0 14px;
       color: #fff;
-      font-size: 17px;
+      font-size: 16px;
       outline: none;
     }
-    input[type="text"]:focus { border-color: var(--border-bright); }
+    input[type="text"]:focus, input[type="password"]:focus, select:focus {
+      border-color: var(--border-bright);
+    }
 
     input[type="range"] {
       width: 100%;
@@ -177,106 +215,217 @@
       margin: 8px 0;
     }
 
-    .log-box {
+    .log-strip {
       background: var(--card);
       border: 1.5px solid var(--border);
       border-radius: 12px;
-      padding: 12px;
-      font-size: 14px;
+      padding: 10px;
+      font-size: 13.5px;
       font-weight: 700;
       color: var(--text-dim);
       font-family: monospace;
-      min-height: 48px;
+      min-height: 42px;
       text-align: center;
       display: flex;
       align-items: center;
       justify-content: center;
-      word-break: break-all;
+    }
+
+    /* Voice Bar */
+    .voice-search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    .voice-search-box input {
+      padding-right: 50px;
+    }
+    .voice-btn {
+      position: absolute;
+      right: 6px;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: none;
+      background: var(--surface);
+      color: var(--ai);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .voice-btn.listening {
+      background: var(--danger);
+      color: #fff;
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
+  <!-- Top App Header -->
   <header class="app-header">
     <div style="display: flex; align-items: center; gap: 8px;">
       <span class="icon" style="color:var(--primary); font-size:32px;">hub</span>
-      <span class="brand-title">SmartHub AI</span>
+      <span class="brand-title">SmartHub AI Core</span>
     </div>
-    <span class="badge-ver" id="fw_badge">v2.2.0</span>
+    <span class="badge-ver" id="fw_badge">v2.3.0</span>
   </header>
 
-  <section class="app-card">
-    <div class="tel-grid">
-      <div class="tel-box">
-        <div class="tel-lbl">क्लाउड लिंक</div>
-        <div class="tel-val" id="cloud_status" style="color:var(--success);">ऑनलाइन</div>
+  <!-- Comprehensive Telemetry Ribbon -->
+  <section class="tel-grid">
+    <div class="tel-box">
+      <div class="tel-lbl">क्लाउड स्थिति</div>
+      <div class="tel-val" id="cloud_status" style="color:var(--success);">ऑनलाइन</div>
+    </div>
+    <div class="tel-box">
+      <div class="tel-lbl">सिग्नल (RSSI)</div>
+      <div class="tel-val" id="rssi_val">-- dBm</div>
+    </div>
+    <div class="tel-box">
+      <div class="tel-lbl">रैम (Free Heap)</div>
+      <div class="tel-val" id="heap_val">0 KB</div>
+    </div>
+    <div class="tel-box">
+      <div class="tel-lbl">रनटाइम</div>
+      <div class="tel-val" id="uptime_val">0s</div>
+    </div>
+  </section>
+
+  <!-- Autonomous AI Intent Engine -->
+  <section class="app-card open" style="border-color: var(--ai);">
+    <div class="app-card-header" onclick="toggleCard(this)">
+      <span class="app-card-title" style="color:var(--ai);">
+        <span class="icon">psychology</span> AI एज इंटेंट कंट्रोल
+      </span>
+      <span class="icon app-card-arrow">expand_more</span>
+    </div>
+    <div class="app-card-content">
+      <div class="voice-search-box">
+        <input type="text" id="ai_input" placeholder="उदा. 'लाइट जलाओ', 'all off', 'night dim'">
+        <button class="voice-btn" id="voiceMicBtn" onclick="toggleVoiceInput()" title="बोलकर निर्देश दें">
+          <span class="icon">mic</span>
+        </button>
       </div>
-      <div class="tel-box">
-        <div class="tel-lbl">सिग्नल (RSSI)</div>
-        <div class="tel-val" id="rssi_val">-- dBm</div>
+      <button class="btn-action btn-ai" onclick="dispatchAI()">
+        <span class="icon">bolt</span> निर्देश प्रोसेस करें (Execute Intent)
+      </button>
+    </div>
+  </section>
+
+  <!-- Relay & PWM Actuators -->
+  <section class="app-card open">
+    <div class="app-card-header" onclick="toggleCard(this)">
+      <span class="app-card-title">
+        <span class="icon" style="color:var(--primary);">toggle_on</span> लोड व रिले नियंत्रण
+      </span>
+      <span class="icon app-card-arrow">expand_more</span>
+    </div>
+    <div class="app-card-content">
+      <div class="btn-grid">
+        <button class="btn-action btn-on" onclick="setRelay(1, true)">
+          <span class="icon">power</span> R1 चालू
+        </button>
+        <button class="btn-action btn-off" onclick="setRelay(1, false)">
+          <span class="icon">power_off</span> R1 बंद
+        </button>
       </div>
-      <div class="tel-box">
-        <div class="tel-lbl">रनटाइम</div>
-        <div class="tel-val" id="uptime_val">0s</div>
+      <div class="btn-grid">
+        <button class="btn-action btn-on" onclick="setRelay(2, true)">
+          <span class="icon">power</span> R2 चालू
+        </button>
+        <button class="btn-action btn-off" onclick="setRelay(2, false)">
+          <span class="icon">power_off</span> R2 बंद
+        </button>
       </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+        <span style="font-size:15px; font-weight:800; color:var(--text-dim);">PWM ड्यूटी रेगुलेशन:</span>
+        <strong id="pwm_readout" style="color:var(--primary); font-family: monospace; font-size:18px;">0</strong>
+      </div>
+      <input type="range" min="0" max="255" value="0" id="pwm_slider" 
+             oninput="document.getElementById('pwm_readout').innerText=this.value" 
+             onchange="setPWM(this.value)">
     </div>
   </section>
 
-  <section class="app-card" style="border-color: var(--ai);">
-    <h3 style="color:var(--ai);">
-      <span class="icon">psychology</span> AI एज इंटेंट कंट्रोल
-    </h3>
-    <input type="text" id="ai_input" placeholder="उदा. 'it is dark', 'turn off all', 'movie dim'">
-    <button class="btn-action btn-ai" onclick="dispatchAI()">
-      <span class="icon">bolt</span> निर्देश भेजें (Execute Intent)
-    </button>
+  <!-- Wi-Fi Parameters & Remote Spectrum Scanner -->
+  <section class="app-card open">
+    <div class="app-card-header" onclick="toggleCard(this)">
+      <span class="app-card-title">
+        <span class="icon" style="color:var(--success);">wifi_find</span> वाई-फाई व स्पेक्ट्रम प्रबंधन
+      </span>
+      <span class="icon app-card-arrow">expand_more</span>
+    </div>
+    <div class="app-card-content">
+      <div style="background:var(--card); padding:10px; border-radius:12px; border:1px solid var(--border); font-size:14.5px;">
+        <div>सक्रिय नेटवर्क (SSID): <strong id="cur_ssid" style="color:var(--primary);">--</strong></div>
+        <div style="margin-top:2px;">असाइन IP पता: <strong id="cur_ip" style="color:var(--primary); font-family:monospace;">--</strong></div>
+        <div style="margin-top:2px;">नोड सॉफ्टएपी: <strong style="color:var(--text-dim);">SmartHub-NodeMCU</strong></div>
+      </div>
+
+      <button class="btn-action btn-p" onclick="triggerRemoteScan()">
+        <span class="icon">radar</span> वाई-फाई नेटवर्क स्कैन करें
+      </button>
+
+      <select id="scanned_networks" onchange="document.getElementById('wifi_ssid').value = this.value">
+        <option value="">स्कैन किए गए नेटवर्क चुनें...</option>
+      </select>
+
+      <input type="text" id="wifi_ssid" placeholder="नया Wi-Fi नाम (SSID)">
+      <input type="password" id="wifi_pass" placeholder="Wi-Fi पासवर्ड">
+      <button class="btn-action btn-on" onclick="saveNewWiFi()">
+        <span class="icon">save</span> नेटवर्क सुरक्षित करें व कनेक्ट करें
+      </button>
+    </div>
   </section>
 
+  <!-- Arduino Slave Router Settings -->
   <section class="app-card">
-    <h3><span class="icon">toggle_on</span> रिले नियंत्रण (Relays)</h3>
-    <div class="btn-grid">
-      <button class="btn-action btn-on" onclick="setRelay(1, true)">
-        <span class="icon">power</span> R1 चालू
-      </button>
-      <button class="btn-action btn-off" onclick="setRelay(1, false)">
-        <span class="icon">power_off</span> R1 बंद
+    <div class="app-card-header" onclick="toggleCard(this)">
+      <span class="app-card-title">
+        <span class="icon" style="color:var(--warning);">alt_route</span> आर्डुइनो स्लेव रूटिंग (Arduino Uno)
+      </span>
+      <span class="icon app-card-arrow">expand_more</span>
+    </div>
+    <div class="app-card-content">
+      <div style="font-size:14px; color:var(--text-dim);">स्लेव नोड का लोकल IP पता कॉन्फ़िगर करें:</div>
+      <input type="text" id="slave_ip" placeholder="192.168.4.20">
+      <button class="btn-action btn-w" onclick="saveSlaveRoute()">
+        <span class="icon">dns</span> स्लेव IP अपडेट करें
       </button>
     </div>
-
-    <div class="btn-grid" style="margin-top: 4px;">
-      <button class="btn-action btn-on" onclick="setRelay(2, true)">
-        <span class="icon">power</span> R2 चालू
-      </button>
-      <button class="btn-action btn-off" onclick="setRelay(2, false)">
-        <span class="icon">power_off</span> R2 बंद
-      </button>
-    </div>
-
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-      <span style="font-size:15px; font-weight:800; color:var(--text-dim);">PWM रेगुलेशन:</span>
-      <strong id="pwm_readout" style="color:var(--primary); font-family: monospace; font-size:18px;">0</strong>
-    </div>
-    <input type="range" min="0" max="255" value="0" id="pwm_slider" 
-           oninput="document.getElementById('pwm_readout').innerText=this.value" 
-           onchange="setPWM(this.value)">
   </section>
 
+  <!-- Worldwide OTA System Maintenance -->
   <section class="app-card">
-    <h3><span class="icon">cloud_sync</span> वैश्विक OTA अपडेट</h3>
-    <button class="btn-action btn-ota" onclick="triggerOTA()">
-      <span class="icon">download</span> GitHub से नया फर्मवेयर खींचें
-    </button>
+    <div class="app-card-header" onclick="toggleCard(this)">
+      <span class="app-card-title">
+        <span class="icon" style="color:var(--border-bright);">cloud_sync</span> वैश्विक फर्मवेयर अपडेट (OTA)
+      </span>
+      <span class="icon app-card-arrow">expand_more</span>
+    </div>
+    <div class="app-card-content">
+      <button class="btn-action btn-p" onclick="triggerOTA()">
+        <span class="icon">download</span> GitHub से नया फर्मवेयर खींचें
+      </button>
+    </div>
   </section>
 
-  <div class="log-box" id="system_log">क्लाउड सिंक्रोनाइज़ेशन तैयार है।</div>
+  <!-- Global Diagnostic Log Strip -->
+  <div class="log-strip" id="system_log">क्लाउड सिंक्रोनाइज़ेशन तैयार है।</div>
 </div>
 
 <script>
-  // Paste your Firebase web app config here:
+  // Paste your Firebase web app config credentials here
   const firebaseConfig = {
     apiKey: "YOUR_FIREBASE_API_KEY",
-    authDomain: "smarthub-controller-default-rtdb.firebaseapp.com",
+    authDomain: "smarthub-controller-default-rtdb.firebaseio.com",
     databaseURL: "https://smarthub-controller-default-rtdb.firebaseio.com",
     projectId: "smarthub-controller",
     storageBucket: "smarthub-controller.firebasestorage.app",
@@ -286,20 +435,50 @@
 
   firebase.initializeApp(firebaseConfig);
   const rtdb = firebase.database();
+  let isListeningVoice = false;
 
+  function toggleCard(headerEl) {
+    headerEl.closest('.app-card').classList.toggle('open');
+  }
+
+  // Real-time listener for telemetry pushed by NodeMCU
   rtdb.ref('/smarthub/telemetry').on('value', snap => {
     const d = snap.val();
     if (!d) return;
 
-    document.getElementById('fw_badge').innerText = 'v' + (d.version || '2.2.0');
+    document.getElementById('fw_badge').innerText = 'v' + (d.version || '2.3.0');
     document.getElementById('rssi_val').innerText = (d.rssi || 0) + ' dBm';
+    document.getElementById('heap_val').innerText = Math.round((d.free_heap || 0) / 1024) + ' KB';
     document.getElementById('uptime_val').innerText = (d.uptime_s || 0) + 's';
     document.getElementById('cloud_status').innerText = d.online ? 'ऑनलाइन' : 'ऑफलाइन';
     document.getElementById('cloud_status').style.color = d.online ? 'var(--success)' : 'var(--danger)';
 
+    document.getElementById('cur_ssid').innerText = d.ssid || '--';
+    document.getElementById('cur_ip').innerText = d.ip || '--';
+
+    if (d.slave_ip && !document.getElementById('slave_ip').value) {
+      document.getElementById('slave_ip').value = d.slave_ip;
+    }
+
     if (d.ai_log) {
       document.getElementById('system_log').innerText = d.ai_log;
     }
+  });
+
+  // Listen for completed Wi-Fi scan results from the NodeMCU
+  rtdb.ref('/smarthub/scan_results').on('value', snap => {
+    const list = snap.val();
+    if (!list || !Array.isArray(list)) return;
+
+    const dd = document.getElementById('scanned_networks');
+    dd.innerHTML = '<option value="">स्कैन किए गए नेटवर्क चुनें...</option>';
+    list.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.ssid;
+      opt.innerText = `${item.ssid} (${item.rssi} dBm)`;
+      dd.appendChild(opt);
+    });
+    document.getElementById('system_log').innerText = `${list.length} वाई-फाई नेटवर्क खोजे गए।`;
   });
 
   function setRelay(channel, state) {
@@ -309,7 +488,6 @@
 
   function setPWM(val) {
     rtdb.ref('/smarthub/control/pwm').set(parseInt(val));
-    document.getElementById('system_log').innerText = `PWM ड्यूटी: ${val} सेट की गई।`;
   }
 
   function dispatchAI() {
@@ -322,9 +500,63 @@
     input.value = '';
   }
 
+  function triggerRemoteScan() {
+    document.getElementById('system_log').innerText = 'नोड को रिमोट स्कैन का आदेश भेजा गया...';
+    rtdb.ref('/smarthub/control/trigger_scan').set(true);
+  }
+
+  function saveNewWiFi() {
+    const ssid = document.getElementById('wifi_ssid').value.trim();
+    const pass = document.getElementById('wifi_pass').value.trim();
+    if (!ssid) return alert("कृपया नेटवर्क SSID दर्ज करें।");
+
+    rtdb.ref('/smarthub/control/wifi_update').set({
+      ssid: ssid,
+      pass: pass,
+      timestamp: Date.now()
+    });
+    document.getElementById('system_log').innerText = `नया नेटवर्क भेजा गया: ${ssid}`;
+  }
+
+  function saveSlaveRoute() {
+    const ip = document.getElementById('slave_ip').value.trim();
+    if (!ip) return;
+    rtdb.ref('/smarthub/control/slave_ip').set(ip);
+    document.getElementById('system_log').innerText = `स्लेव IP अपडेट: ${ip}`;
+  }
+
   function triggerOTA() {
     rtdb.ref('/smarthub/control/trigger_ota').set(true);
     document.getElementById('system_log').innerText = 'GitHub OTA जांच ट्रिगर की गई।';
+  }
+
+  // Voice Input Integration
+  function toggleVoiceInput() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return alert("आपके ब्राउज़र में वॉइस रिकॉग्निशन सपोर्ट नहीं है।");
+
+    const micBtn = document.getElementById('voiceMicBtn');
+    if (isListeningVoice) {
+      isListeningVoice = false;
+      micBtn.classList.remove('listening');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'hi-IN';
+    recognition.onstart = () => {
+      isListeningVoice = true;
+      micBtn.classList.add('listening');
+    };
+    recognition.onresult = (e) => {
+      document.getElementById('ai_input').value = e.results[0][0].transcript;
+      dispatchAI();
+    };
+    recognition.onend = () => {
+      isListeningVoice = false;
+      micBtn.classList.remove('listening');
+    };
+    recognition.start();
   }
 </script>
 
