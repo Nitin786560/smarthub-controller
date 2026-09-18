@@ -1,66 +1,105 @@
-name: Compile & Package ESP8266 Firmware
+name: Compile & Build ESP8266 Firmware
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - '**.ino'
-      - '.github/workflows/compile.yml'
+    branches: [ "main", "master" ]
+    tags:
+      - "v*.*.*"
+      - "v*"
+  pull_request:
+    branches: [ "main", "master" ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Arduino CLI
         uses: arduino/setup-arduino-cli@v2
 
-      - name: Install ESP8266 Board Platform
+      - name: Install ESP8266 Board Core
         run: |
           arduino-cli config init
-          arduino-cli config set board_manager.additional_urls https://arduino.esp8266.com/stable/package_esp8266com_index.json
+          arduino-cli config add board_manager.additional_urls https://arduino.esp8266.com/stable/package_esp8266com_index.json
           arduino-cli core update-index
           arduino-cli core install esp8266:esp8266
 
-      - name: Install External Libraries
+      - name: Install Core Libraries
         run: |
-          arduino-cli lib update-index
-          # Install external dependencies required by smarthub.ino
           arduino-cli lib install "ArduinoJson"
+          arduino-cli lib install "LiquidCrystal_I2C"
+          arduino-cli lib install "LiquidCrystal"
+
+      - name: Scaffold CLI-Compliant Build Sandbox
+        run: |
+          mkdir -p build_dir
+          if [ -f "smarthub.ino" ]; then
+            cp smarthub.ino build_dir/build_dir.ino
+          elif [ -f "*.ino" ]; then
+            cp *.ino build_dir/build_dir.ino
+          else
+            echo "::error::Primary .ino file not found in root repository."
+            exit 1
+          fi
+
+          shopt -s nullglob
+          for ext in h hpp cpp c; do
+            files=(*.$ext)
+            if [ ${#files[@]} -gt 0 ]; then
+              cp *.$ext build_dir/
+            fi
+          done
 
       - name: Compile Sketch
         run: |
           arduino-cli compile \
             --fqbn esp8266:esp8266:nodemcuv2 \
-            --output-dir build \
-            smarthub.ino
+            --output-dir ./build_output \
+            build_dir
 
-      - name: Commit and Push Compiled Binary
+      - name: Stage Firmware Binary and Checksum
+        run: |
+          if [ -f "./build_output/build_dir.ino.bin" ]; then
+            cp ./build_output/build_dir.ino.bin ./firmware.bin
+          else
+            BIN_PATH=$(find ./build_output -type f -name "*.bin" | head -n 1)
+            if [ -n "$BIN_PATH" ]; then
+              cp "$BIN_PATH" ./firmware.bin
+            else
+              echo "::error::Compiled firmware binary was not generated."
+              exit 1
+            fi
+          fi
+          
+          # Generate MD5 hash for ESP8266httpUpdate validation
+          md5sum ./firmware.bin | awk '{print $1}' > ./firmware.bin.md5
+          ls -lh ./firmware.bin*
+
+      - name: Upload Firmware Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: smarthub-firmware
+          path: |
+            ./firmware.bin
+            ./firmware.bin.md5
+          retention-days: 14
+
+      - name: Create GitHub Release and Publish Assets
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./firmware.bin
+            ./firmware.bin.md5
+          generate_release_notes: true
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Move output binary to root target
-          cp build/smarthub.ino.bin firmware.bin
-          
-          git add firmware.bin
-          
-          # Commit only if changes exist to prevent empty commit errors
-          if ! git diff --staged --quiet; then
-            git commit -m "build(ci): auto-compile updated firmware.bin [skip ci]"
-            git push origin main
-          else
-            echo "No changes detected in compiled binary."
-          fi
