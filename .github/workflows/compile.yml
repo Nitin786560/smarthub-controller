@@ -1,9 +1,12 @@
-name: Auto-Compile & Deploy Firmware
+name: Compile and Release SmartHub Firmware
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'smarthub.ino'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -13,50 +16,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code Repository
+      - name: Checkout Repository Code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
-      # --- TOTAL LOGICAL SANDBOX FIX ---
-      # We construct an entirely new config directory inside /tmp to fully bypass any system cache
-      - name: Initialize Isolated Environment
-        run: |
-          mkdir -p /tmp/arduino_home
-          mkdir -p /tmp/arduino_data
-          curl -fsSL https://githubusercontent.com | sh
-          sudo mv bin/arduino-cli /usr/local/bin/
+      - name: Setup Arduino CLI Environment
+        uses: arduino/setup-arduino-cli@v2
 
-      - name: Install ESP8266 Core Architecture
-        env:
-          ARDUINO_DATA_DIR: /tmp/arduino_data
-          ARDUINO_DOWNLOADS_DIR: /tmp/arduino_home/downloads
-          ARDUINO_USER_DIR: /tmp/arduino_home/user
+      - name: Purge Broken Configuration and Core Cache
         run: |
-          # Explicitly set the configuration using environment flags
+          echo "Purging old configuration caches..."
+          rm -rf ~/.arduino15
           arduino-cli config init --overwrite
-          arduino-cli core update-index --additional-urls https://esp8266.com
-          arduino-cli core install esp8266:esp8266 --additional-urls https://esp8266.com
 
-      - name: Restructure Project Directory for CLI Standard
+      - name: Configure ESP8266 Core Index Managers
         run: |
-          mkdir -p build_workspace/smarthub
-          cp smarthub.ino build_workspace/smarthub/smarthub.ino
+          arduino-cli config set board_manager.additional_urls https://esp8266.com
+          arduino-cli core update-index
 
-      - name: Compile Code into Binary
-        env:
-          ARDUINO_DATA_DIR: /tmp/arduino_data
-          ARDUINO_DOWNLOADS_DIR: /tmp/arduino_home/downloads
-          ARDUINO_USER_DIR: /tmp/arduino_home/user
+      - name: Install ESP8266 Board Core Package
         run: |
-          arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 ./build_workspace/smarthub --output-dir ./build_out
+          arduino-cli core install esp8266:esp8266
 
-      - name: Deploy Firmware Update Directly to Repository Root
+      - name: Compile Microchip Firmware Asset
         run: |
-          mv ./build_out/*.bin ./firmware.bin
-          rm -rf ./build_workspace ./build_out
-          
+          arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 --output-dir ./build smarthub.ino
+
+      - name: Stage and Push Compiled Binary to Repository Root
+        run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@://github.com"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          
+          # Move binary from isolation build folder to the repository root
+          cp ./build/smarthub.ino.bin ./firmware.bin
+          
+          # Track, commit, and push back to main branch
           git add firmware.bin
-          git diff-index --quiet HEAD || git commit -m "Automated cloud compile: firmware.bin updated [Skip CI]"
-          git push origin HEAD:${{ github.ref }}
+          
+          # Only commit if changes actually exist to prevent runner loops
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Automated CI Build: Update firmware.bin [Build Signature: $GITHUB_RUN_NUMBER]"
+            git push origin main
+          else
+            echo "No firmware changes detected. Skipping push."
+          fi
 
