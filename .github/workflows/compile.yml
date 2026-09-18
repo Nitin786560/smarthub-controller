@@ -21,9 +21,15 @@ jobs:
 
       - name: Install ESP8266 Core Architecture
         run: |
+          # --- SELF-CLEANING FIX ---
+          # Force clears any broken URL index caches left behind by previous failed runs
+          rm -rf ~/.arduino15/package_index.json*
+          rm -rf ~/.arduino15/cache/*
+
+          # Initialize index using the official stable server parameters cleanly
           arduino-cli core update-index --additional-urls https://esp8266.com
           
-          # Retry loop with a 15-second gap handles any minor network drops smoothly
+          # Retry loop with a 15-second gap handles minor network drops smoothly
           for i in {1..3}; do
             arduino-cli core install esp8266:esp8266 --additional-urls https://esp8266.com && break || sleep 15
           done
@@ -47,4 +53,3 @@ jobs:
           git add firmware.bin
           git diff-index --quiet HEAD || git commit -m "Automated cloud compile: firmware.bin updated [Skip CI]"
           git push origin HEAD:${{ github.ref }}
-
