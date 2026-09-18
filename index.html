@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global GitHub IoT Hub</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .wrap { width: 100%; max-width: 440px; }
+        h1 { color: #38bdf8; font-size: 24px; margin-bottom: 4px; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+        input[type='text'] { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #475569; border-radius: 6px; color: #fff; box-sizing: border-box; margin-bottom: 10px; }
+        .btn { background: #0284c7; color: #fff; border: none; padding: 12px; font-weight: 600; width: 100%; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 5px; }
+        .btn:hover { background: #0284c7; opacity: 0.9; }
+        .btn-danger { background: #dc2626; }
+        .flex { display: flex; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body>
+
+<div class="wrap">
+    <h1>GitHub IoT Gateway</h1>
+    <p style="color:#94a3b8; font-size:12px; margin-bottom:20px;">Hosted securely on GitHub Pages</p>
+
+    <!-- Target Controller Mapping Engine -->
+    <div class="card">
+        <h3 style="margin:0 0 10px; font-size:15px; color:#e2e8f0;">Active Node Configuration</h3>
+        <input type="text" id="targetIP" placeholder="e.g., 192.168.0.4 or 192.168.4.1">
+        <button class="btn" onclick="saveTargetIP()">Bind Hardware IP</button>
+    </div>
+
+    <!-- Active Functional Execution Cards -->
+    <div class="card flex">
+        <h3 style="margin:0; font-size:15px; color:#e2e8f0;">Appliance Relay (Pin 8)</h3>
+        <div style="display:flex; gap:8px;">
+            <button class="btn" style="padding:8px 16px; background:#10b981;" onclick="dispatchCommand('s', '8', '1')">ON</button>
+            <button class="btn btn-danger" style="padding:8px 16px;" onclick="dispatchCommand('s', '8', '0')">OFF</button>
+        </div>
+    </div>
+
+    <!-- Direct Core System Access Redirect Elements -->
+    <div class="card">
+        <h3 style="margin:0 0 10px; font-size:15px; color:#e2e8f0;">System Operations</h3>
+        <button class="btn" style="background:#334155;" onclick="redirectToRoute('admin')">Open Local Admin Panel</button>
+        <button class="btn" style="background:#a855f7;" onclick="redirectToRoute('update')">Launch Wireless OTA Update</button>
+    </div>
+</div>
+
+<script>
+    // Load previously verified IP targets out of browser sandbox container registers
+    window.onload = function() {
+        let savedIP = localStorage.getItem("iot_target_ip");
+        if(savedIP) {
+            document.getElementById("targetIP").value = savedIP;
+        } else {
+            document.getElementById("targetIP").value = "192.168.4.1"; // Default standalone mapping fallback
+        }
+    };
+
+    function saveTargetIP() {
+        let ip = document.getElementById("targetIP").value.trim().replace(/^https?:\/\//, '');
+        localStorage.setItem("iot_target_ip", ip);
+        alert("Target node successfully locked into local storage memory map!");
+    }
+
+    // Smart AJAX dispatcher handles requests
+    function dispatchCommand(endpoint, pin, state) {
+        let ip = localStorage.getItem("iot_target_ip") || "192.168.4.1";
+        
+        // Constructs pure HTTP routing URL string dynamically
+        let targetUrl = "http://" + ip + "/save-wifi?s=" + pin + "&p=" + state;
+        
+        // Form link execution element bypasses browser security policy constraints cleanly
+        let form = document.createElement('form');
+        form.method = 'POST';
+        form.action = targetUrl;
+        form.target = 'hidden_frame'; // Fires silently without taking you away from GitHub
+        
+        // Add hidden frame to dom if it doesn't exist
+        let frame = document.getElementById('hidden_frame');
+        if(!frame) {
+            frame = document.createElement('iframe');
+            frame.id = 'hidden_frame';
+            frame.name = 'hidden_frame';
+            frame.style.display = 'none';
+            document.body.appendChild(frame);
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+    }
+
+    function redirectToRoute(path) {
+        let ip = localStorage.getItem("iot_target_ip") || "192.168.4.1";
+        window.location.href = "http://" + ip + "/" + path;
+    }
+</script>
+
+</body>
+</html>
