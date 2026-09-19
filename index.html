@@ -381,7 +381,7 @@
           <div style="font-size:11px; color:var(--text-dim);">Authentication Gateway</div>
         </div>
       </div>
-      <span class="badge-ver">v6.0.0</span>
+      <span class="badge-ver">v6.2.0</span>
     </div>
 
     <div id="step_pin_entry" style="display: flex; flex-direction: column; gap: 12px;">
@@ -413,15 +413,15 @@
 <div class="container" id="mainDashboard" style="display: none;">
   <header class="app-header">
     <div class="brand-title">
-      <span class="icon">hub</span> SmartHub Universal Grid
+      <span class="icon">hub</span> SmartHub Ultra Grid
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
       <button style="background:transparent; border:none; color:var(--text-dim); cursor:pointer;" onclick="logout()"><span class="icon">logout</span></button>
-      <span class="badge-ver" id="fw_badge">v6.0.0</span>
+      <span class="badge-ver" id="fw_badge">v6.2.0</span>
     </div>
   </header>
 
-  <!-- Diagnostics Status Ribbon -->
+  <!-- Diagnostics -->
   <section class="diag-grid">
     <div class="diag-box"><div class="diag-lbl">Status</div><div class="diag-val" id="stream_status">LIVE</div></div>
     <div class="diag-box"><div class="diag-lbl">SSID</div><div class="diag-val" id="ssid_val">--</div></div>
@@ -593,7 +593,7 @@
     <input type="range" min="0" max="255" value="0" id="pwm_slider" oninput="document.getElementById('pwm_val_txt').innerText=this.value" onchange="commitPWM(this.value)">
   </section>
 
-  <!-- ================= SLAVE NODE 1 (ESP-01 STANDALONE) ================= -->
+  <!-- ================= SLAVE NODE 1 (ESP-01) ================= -->
   <section class="app-card">
     <div class="card-header-bar">
       <div class="card-title">
@@ -618,7 +618,7 @@
     </div>
   </section>
 
-  <!-- ================= SLAVE NODE 2 (ESP-01 STANDALONE) ================= -->
+  <!-- ================= SLAVE NODE 2 (ESP-01) ================= -->
   <section class="app-card">
     <div class="card-header-bar">
       <div class="card-title">
@@ -893,7 +893,7 @@
       document.getElementById('ping_feedback_txt').innerText = `Responded in ${totalSeconds}s (${rttMs} ms)`;
     });
 
-    // True physical feedback listener
+    // Hardware Telemetry Sync
     rtdb.ref('/smarthub/telemetry').on('value', snap => {
       const d = snap.val();
       if (!d) return;
