@@ -157,7 +157,7 @@
       box-shadow: 0 0 6px var(--success);
     }
 
-    /* Test & Maintenance Row */
+    /* Action Rows */
     .action-row {
       display: flex;
       align-items: center;
@@ -391,7 +391,7 @@
           <div style="font-size: 12px; color: var(--text-dim);">Authentication Required</div>
         </div>
       </div>
-      <span class="badge-ver">v2.8.5</span>
+      <span class="badge-ver">v2.9</span>
     </div>
 
     <div id="step_pin_entry" style="display: flex; flex-direction: column; gap: 12px;">
@@ -428,7 +428,7 @@
     </div>
     <div style="display: flex; align-items: center; gap: 6px;">
       <button style="background:transparent; border:none; color:var(--text-dim); cursor:pointer;" onclick="logout()"><span class="icon">logout</span></button>
-      <span class="badge-ver" id="fw_badge">v2.8.5</span>
+      <span class="badge-ver" id="fw_badge">v2.9.0</span>
     </div>
   </header>
 
@@ -439,7 +439,7 @@
       <div class="diag-val" id="stream_status" style="color:var(--success);">LIVE</div>
     </div>
     <div class="diag-box">
-      <div class="diag-lbl">EEPROM CRC</div>
+      <div class="diag-lbl">EEPROM Check</div>
       <div class="diag-val" id="eeprom_status" style="color:var(--success);">PASSED</div>
     </div>
     <div class="diag-box">
@@ -465,7 +465,7 @@
     <div class="action-row">
       <div style="display: flex; flex-direction: column; gap: 2px;">
         <span style="font-size: 14px; font-weight: 800; color: #fff;">Probe Gateway LED</span>
-        <span style="font-size: 12px; color: var(--text-dim);" id="ping_feedback_txt">Flashes blue LED 3x and measures round-trip time</span>
+        <span style="font-size: 12px; color: var(--text-dim);" id="ping_feedback_txt">Flashes blue LED 4x and measures round-trip time</span>
       </div>
       <button class="btn-action btn-p" style="height: 38px; padding: 0 14px; font-size: 13px;" id="btn_run_test" onclick="runNodeMCUTest()">
         <span class="icon" style="font-size: 18px;">bolt</span> Test Now
@@ -594,6 +594,7 @@
 </div>
 
 <script>
+  // Ensure these parameters match your Firebase project exactly
   const firebaseConfig = {
     apiKey: "YOUR_FIREBASE_API_KEY",
     authDomain: "smarthub-controller-default-rtdb.firebaseio.com",
@@ -725,28 +726,28 @@
     btn.innerText = "Probing...";
 
     activePingTimestamp = Date.now();
-    document.getElementById('ping_feedback_txt').innerText = "Dispatched probe: Waiting for NodeMCU echo & LED burst...";
-    document.getElementById('ping_metric_badge').innerText = "-- ms";
+    document.getElementById('ping_feedback_txt').innerText = "Probe sent. Awaiting NodeMCU LED blink...";
+    document.getElementById('ping_metric_badge').innerText = "...";
     document.getElementById('ping_metric_badge').style.color = "var(--warning)";
 
-    // Send probe trigger to cloud
+    // Send direct boolean trigger to NodeMCU
     rtdb.ref('/smarthub/control/ping_request').set(true);
 
     clearTimeout(pingTimeoutTimer);
     pingTimeoutTimer = setTimeout(() => {
       btn.disabled = false;
       btn.innerHTML = '<span class="icon" style="font-size: 18px;">bolt</span> Test Now';
-      document.getElementById('ping_metric_badge').innerText = "TIMEOUT";
+      document.getElementById('ping_metric_badge').innerText = "FAILED";
       document.getElementById('ping_metric_badge').style.color = "var(--danger)";
-      document.getElementById('ping_feedback_txt').innerText = "Probe failed: NodeMCU did not acknowledge within 3.5 seconds.";
-    }, 3500);
+      document.getElementById('ping_feedback_txt').innerText = "Probe timed out: NodeMCU stream is unresponsive.";
+    }, 4000);
   }
 
-  // Manual Remote Reboot
+  // Manual Remote Reboot Trigger
   function triggerManualReboot() {
-    if (confirm("Are you sure you want to reboot the NodeMCU gateway?")) {
+    if (confirm("Are you sure you want to reboot the NodeMCU gateway now?")) {
       rtdb.ref('/smarthub/control/trigger_reboot').set(true);
-      document.getElementById('system_log').innerText = "Reboot command dispatched. NodeMCU restarting...";
+      document.getElementById('system_log').innerText = "Reboot command dispatched to NodeMCU...";
       document.getElementById('stream_status').innerText = "REBOOTING";
       document.getElementById('stream_status').style.color = "var(--warning)";
     }
@@ -770,7 +771,7 @@
     // Watch for Round-Trip Echo from NodeMCU
     rtdb.ref('/smarthub/telemetry/ping_response').on('value', snap => {
       if (activePingTimestamp === 0) return;
-      
+
       clearTimeout(pingTimeoutTimer);
       const rtt = Date.now() - activePingTimestamp;
       activePingTimestamp = 0;
@@ -783,7 +784,7 @@
       badge.innerText = `${rtt} ms`;
       badge.style.color = rtt < 500 ? "var(--success)" : "var(--warning)";
 
-      document.getElementById('ping_feedback_txt').innerText = `Self-test passed! MCU executed LED strobe & responded in ${rtt} ms.`;
+      document.getElementById('ping_feedback_txt').innerText = `Self-test passed! LED flashed & responded in ${rtt} ms.`;
     });
 
     rtdb.ref('/smarthub/telemetry').on('value', snap => {
@@ -791,7 +792,7 @@
       const d = snap.val();
       if (!d) return;
 
-      document.getElementById('fw_badge').innerText = 'v' + (d.version || '2.8.5');
+      document.getElementById('fw_badge').innerText = 'v' + (d.version || '2.9.0');
       document.getElementById('rssi_val').innerText = (d.rssi || 0) + ' dBm';
       document.getElementById('heap_val').innerText = Math.round((d.free_heap || 0) / 1024) + ' KB';
 
