@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#020617">
-  <title>SmartHub AI Grid v2.6.2 Ultimate</title>
+  <title>SmartHub AI Unified Core</title>
 
   <!-- Google Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@600;700;800;900&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,700,1,0&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,700,1,0&display=swap" rel="stylesheet">
 
   <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -29,14 +29,14 @@
       --warning: #f59e0b;
       --ai: #a855f7;
       --text: #ffffff;
-      --text-dim: #cbd5e1;
+      --text-dim: #94a3b8;
       --radius: 16px;
     }
 
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0; padding: 0;
-      font-family: 'Mukta', system-ui, sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -66,7 +66,6 @@
       justify-content: center;
     }
 
-    /* Top Sticky Header */
     .app-header {
       background: rgba(11, 19, 41, 0.98);
       border: 2px solid var(--border);
@@ -78,8 +77,8 @@
     }
 
     .brand-title {
-      font-size: 22px;
-      font-weight: 900;
+      font-size: 20px;
+      font-weight: 800;
       color: var(--primary);
       text-shadow: 0 0 10px var(--primary-glow);
     }
@@ -87,8 +86,8 @@
     .badge-ver {
       background: var(--primary);
       color: #000;
-      font-size: 13px;
-      font-weight: 900;
+      font-size: 12px;
+      font-weight: 800;
       padding: 2px 8px;
       border-radius: 6px;
     }
@@ -104,7 +103,7 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
 
-    /* Self-Correction Diagnostics Ribbon */
+    /* Diagnostics Ribbon */
     .diag-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -120,10 +119,75 @@
       flex-direction: column;
       justify-content: center;
     }
-    .diag-lbl { font-size: 11.5px; font-weight: 800; color: var(--text-dim); }
-    .diag-val { font-size: 14px; font-weight: 900; font-family: monospace; color: var(--primary); margin-top: 2px; }
+    .diag-lbl { font-size: 11px; font-weight: 700; color: var(--text-dim); }
+    .diag-val { font-size: 13.5px; font-weight: 800; font-family: monospace; color: var(--primary); margin-top: 2px; }
 
-    /* Single Interactive Switches */
+    /* Slave Link Status Pods */
+    .slave-status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .slave-pill {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .slave-pill.online {
+      border-color: var(--success);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.25);
+    }
+    .slave-pill.offline {
+      border-color: var(--danger);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--danger);
+    }
+    .slave-pill.online .status-dot {
+      background: var(--success);
+      box-shadow: 0 0 6px var(--success);
+    }
+
+    /* Target Dispatch Bar */
+    .target-bar {
+      background: var(--card);
+      border: 2px solid var(--border-bright);
+      border-radius: 14px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .target-pills { display: flex; gap: 6px; }
+    .target-btn {
+      flex: 1;
+      padding: 8px 4px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-dim);
+      font-weight: 700;
+      font-size: 12.5px;
+      cursor: pointer;
+    }
+    .target-btn.active {
+      background: var(--primary);
+      color: #000;
+      border-color: var(--primary);
+    }
+
+    /* Switch Rows */
     .switch-card {
       display: flex;
       align-items: center;
@@ -140,15 +204,15 @@
     }
     .switch-info { display: flex; flex-direction: column; gap: 2px; }
     .switch-name {
-      font-size: 17px;
-      font-weight: 900;
+      font-size: 16px;
+      font-weight: 800;
       color: var(--text);
       display: flex;
       align-items: center;
       gap: 6px;
       cursor: pointer;
     }
-    .switch-state-tag { font-size: 13px; font-weight: 800; color: var(--text-dim); }
+    .switch-state-tag { font-size: 12px; font-weight: 700; color: var(--text-dim); }
     .switch-card.active .switch-state-tag { color: var(--success); }
 
     .cyber-toggle {
@@ -189,35 +253,7 @@
       box-shadow: 0 0 12px var(--success);
     }
 
-    /* Target Selector Bar */
-    .target-bar {
-      background: var(--card);
-      border: 2px solid var(--border-bright);
-      border-radius: 14px;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .target-pills { display: flex; gap: 6px; }
-    .target-btn {
-      flex: 1;
-      padding: 8px 4px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--text-dim);
-      font-weight: 800;
-      font-size: 13px;
-      cursor: pointer;
-    }
-    .target-btn.active {
-      background: var(--primary);
-      color: #000;
-      border-color: var(--primary);
-    }
-
-    /* Live Progress Bar Components */
+    /* Progress Indicators */
     .ota-progress-box {
       background: var(--card);
       border: 1.5px solid var(--border);
@@ -243,8 +279,8 @@
       transition: width 0.25s ease-out;
     }
 
-    /* Inputs & Buttons */
-    input[type="text"], input[type="password"], input[type="tel"], select {
+    /* Controls & Forms */
+    input[type="text"], input[type="password"], input[type="tel"] {
       width: 100%;
       height: 48px;
       background: var(--card);
@@ -252,7 +288,7 @@
       border-radius: 12px;
       padding: 0 14px;
       color: #fff;
-      font-size: 16px;
+      font-size: 15px;
       outline: none;
     }
     input[type="range"] {
@@ -268,8 +304,8 @@
       height: 50px;
       border-radius: 12px;
       border: none;
-      font-size: 16px;
-      font-weight: 900;
+      font-size: 15px;
+      font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -287,7 +323,7 @@
       border: 1.5px solid var(--border);
       border-radius: 12px;
       padding: 10px;
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--text-dim);
       font-family: monospace;
@@ -298,7 +334,7 @@
       justify-content: center;
     }
 
-    /* Modal Gateways */
+    /* Modals */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -313,7 +349,7 @@
       width: 100%;
       max-width: 440px;
       background: var(--surface);
-      border: 2.5px solid var(--border-bright);
+      border: 2px solid var(--border-bright);
       border-radius: 24px;
       padding: 24px 20px;
       display: flex;
@@ -323,9 +359,9 @@
     }
     .login-pin-input {
       height: 64px;
-      font-size: 32px;
-      font-weight: 900;
-      letter-spacing: 14px;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: 12px;
       text-align: center;
       border-radius: 14px;
     }
@@ -333,99 +369,127 @@
 </head>
 <body>
 
-<!-- PIN AUTHENTICATION GATEWAY -->
+<!-- PIN GATEWAY MODAL -->
 <div class="modal-overlay" id="authGate">
   <div class="modal-card">
     <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border); padding-bottom: 12px;">
       <div style="display: flex; align-items: center; gap: 10px; color: var(--primary);">
-        <span class="icon" style="font-size: 38px;">lock</span>
+        <span class="icon" style="font-size: 36px;">lock</span>
         <div>
-          <div style="font-size: 22px; font-weight: 900; color: #fff;">SmartHub सुरक्षा</div>
-          <div style="font-size: 13px; color: var(--text-dim);">प्रमाणीकरण आवश्यक है</div>
+          <div style="font-size: 20px; font-weight: 800; color: #fff;">SmartHub Access</div>
+          <div style="font-size: 12px; color: var(--text-dim);">Authentication Required</div>
         </div>
       </div>
-      <span class="badge-ver">v2.6 Secure</span>
+      <span class="badge-ver">v2.7</span>
     </div>
 
     <!-- Step 1: Standard PIN Entry -->
     <div id="step_pin_entry" style="display: flex; flex-direction: column; gap: 12px;">
-      <label style="font-size: 15px; font-weight: 800; color: var(--text-dim); text-align: center;">अपना 4-अंकों का गुप्त सुरक्षा पिन दर्ज करें:</label>
+      <label style="font-size: 14px; font-weight: 700; color: var(--text-dim); text-align: center;">Enter 4-Digit Security PIN:</label>
       <input type="password" id="input_login_pin" class="login-pin-input" placeholder="••••" maxlength="6" inputmode="numeric">
       <button class="btn-action btn-p" onclick="verifyLoginPIN()">
-        <span class="icon">key</span> अनलॉक करें (Unlock)
+        <span class="icon">key</span> Unlock Dashboard
       </button>
       <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-        <button style="background:transparent; border:none; color:var(--primary); font-size:14px; font-weight:800; cursor:pointer;" onclick="openRecoveryFlow()">पिन भूल गए? (Recover)</button>
-        <button style="background:transparent; border:none; color:var(--text-dim); font-size:14px; font-weight:800; cursor:pointer;" onclick="openChangePinFlow()">पिन बदलें</button>
+        <button style="background:transparent; border:none; color:var(--primary); font-size:13px; font-weight:700; cursor:pointer;" onclick="openRecoveryFlow()">Forgot PIN?</button>
+        <button style="background:transparent; border:none; color:var(--text-dim); font-size:13px; font-weight:700; cursor:pointer;" onclick="openChangePinFlow()">Change PIN</button>
       </div>
     </div>
 
-    <!-- Step 2: Emergency Recovery Flow -->
+    <!-- Step 2: Emergency Recovery -->
     <div id="step_pin_recovery" style="display: none; flex-direction: column; gap: 12px;">
-      <strong style="color:var(--warning); font-size:16px;">मास्टर सत्यापन द्वारा रिकवरी:</strong>
-      <input type="tel" id="rec_mobile" placeholder="पंजीकृत मोबाइल नंबर (उदा. 8354816628)">
-      <input type="text" id="rec_word" placeholder="सिक्योरिटी की-वर्ड (उदा. SMARTHUB)">
-      <input type="password" id="rec_new_pin" placeholder="नया 4-अंकों का पिन सेट करें" maxlength="6" inputmode="numeric">
+      <strong style="color:var(--warning); font-size:15px;">Master Recovery Verification:</strong>
+      <input type="tel" id="rec_mobile" placeholder="Registered Mobile (e.g. 8354816628)">
+      <input type="text" id="rec_word" placeholder="Security Word (e.g. SMARTHUB)">
+      <input type="password" id="rec_new_pin" placeholder="Set New 4-Digit PIN" maxlength="6" inputmode="numeric">
       <button class="btn-action btn-w" onclick="executePINRecovery()">
-        <span class="icon">verified_user</span> पिन रीसेट व लॉगिन
+        <span class="icon">verified_user</span> Reset PIN & Sign In
       </button>
-      <button style="background:transparent; border:none; color:var(--text-dim); font-size:14px; font-weight:800; cursor:pointer;" onclick="backToPINEntry()">वापस जाएं</button>
+      <button style="background:transparent; border:none; color:var(--text-dim); font-size:13px; font-weight:700; cursor:pointer;" onclick="backToPINEntry()">Back to Login</button>
     </div>
   </div>
 </div>
 
+<!-- MAIN DASHBOARD -->
 <div class="container" id="mainDashboard" style="display: none;">
   <header class="app-header">
     <div style="display: flex; align-items: center; gap: 8px;">
-      <span class="icon" style="color:var(--primary); font-size:30px;">tune</span>
-      <span class="brand-title">SmartHub AI Grid</span>
+      <span class="icon" style="color:var(--primary); font-size:28px;">tune</span>
+      <span class="brand-title">SmartHub AI Core</span>
     </div>
     <div style="display: flex; align-items: center; gap: 6px;">
       <button style="background:transparent; border:none; color:var(--text-dim); cursor:pointer;" onclick="logout()"><span class="icon">logout</span></button>
-      <span class="badge-ver" id="fw_badge">v2.6.0</span>
+      <span class="badge-ver" id="fw_badge">v2.7.0</span>
     </div>
   </header>
 
-  <!-- Self-Correction & Backend Integrity Ribbon -->
+  <!-- Diagnostics Status Ribbon -->
   <section class="diag-grid">
     <div class="diag-box">
-      <div class="diag-lbl">क्लाउड स्ट्रीम</div>
-      <div class="diag-val" id="stream_status" style="color:var(--success);">सक्रिय</div>
+      <div class="diag-lbl">Cloud Stream</div>
+      <div class="diag-val" id="stream_status" style="color:var(--success);">LIVE</div>
     </div>
     <div class="diag-box">
-      <div class="diag-lbl">EEPROM स्थिति</div>
-      <div class="diag-val" id="eeprom_status" style="color:var(--success);">वैध (CRC)</div>
+      <div class="diag-lbl">EEPROM CRC</div>
+      <div class="diag-val" id="eeprom_status" style="color:var(--success);">PASSED</div>
     </div>
     <div class="diag-box">
-      <div class="diag-lbl">फ्री हीप (RAM)</div>
+      <div class="diag-lbl">Free RAM</div>
       <div class="diag-val" id="heap_val">0 KB</div>
     </div>
     <div class="diag-box">
-      <div class="diag-lbl">सिग्नल (RSSI)</div>
+      <div class="diag-lbl">Wi-Fi RSSI</div>
       <div class="diag-val" id="rssi_val">-- dBm</div>
+    </div>
+  </section>
+
+  <!-- Arduino Slave Hardware Link Matrix -->
+  <section class="slave-status-grid">
+    <div class="slave-pill offline" id="slave_box_1">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <div class="status-dot"></div>
+        <strong style="font-size:14px;">Uno-1</strong>
+      </div>
+      <span style="font-size:11px; color:var(--text-dim);" id="link_status_1">Checking...</span>
+    </div>
+
+    <div class="slave-pill offline" id="slave_box_2">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <div class="status-dot"></div>
+        <strong style="font-size:14px;">Uno-2</strong>
+      </div>
+      <span style="font-size:11px; color:var(--text-dim);" id="link_status_2">Checking...</span>
+    </div>
+
+    <div class="slave-pill offline" id="slave_box_3">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <div class="status-dot"></div>
+        <strong style="font-size:14px;">Uno-3</strong>
+      </div>
+      <span style="font-size:11px; color:var(--text-dim);" id="link_status_3">Checking...</span>
     </div>
   </section>
 
   <!-- Target Routing Matrix -->
   <section class="target-bar">
-    <span style="font-size:13px; font-weight:800; color:var(--primary);">🎯 लक्षित इकाई चुनें (Dispatch Route):</span>
+    <span style="font-size:12px; font-weight:800; color:var(--primary);">🎯 Select Target Unit:</span>
     <div class="target-pills">
-      <button class="target-btn active" onclick="setTarget('all', this)">सब पर (ALL)</button>
+      <button class="target-btn active" onclick="setTarget('all', this)">Broadcast (ALL)</button>
       <button class="target-btn" onclick="setTarget('1', this)">Uno-1</button>
       <button class="target-btn" onclick="setTarget('2', this)">Uno-2</button>
       <button class="target-btn" onclick="setTarget('3', this)">Uno-3</button>
     </div>
   </section>
 
-  <!-- Ergonomic Single Switches -->
+  <!-- Actuator Toggle Cards -->
   <section class="app-card">
     <div class="switch-card" id="card_r1">
       <div class="switch-info">
-        <span class="switch-name" onclick="renameDevice('r1_name', 'लोड 1')">
-          <span id="label_r1">लोड / रिले 1</span>
+        <span class="switch-name" onclick="renameDevice('r1_name', 'Relay 1')">
+          <span id="label_r1">Load / Relay 1</span>
           <span class="icon" style="font-size: 16px; color: var(--text-dim);">edit</span>
         </span>
-        <span class="switch-state-tag" id="sub_r1">स्थिति: बंद (OFF)</span>
+        <span class="switch-state-tag" id="sub_r1">State: OFF</span>
       </div>
       <label class="cyber-toggle">
         <input type="checkbox" id="toggle_r1" onchange="handleSwitch(1, this.checked)">
@@ -435,11 +499,11 @@
 
     <div class="switch-card" id="card_r2" style="margin-top: 4px;">
       <div class="switch-info">
-        <span class="switch-name" onclick="renameDevice('r2_name', 'लोड 2')">
-          <span id="label_r2">लोड / रिले 2</span>
+        <span class="switch-name" onclick="renameDevice('r2_name', 'Relay 2')">
+          <span id="label_r2">Load / Relay 2</span>
           <span class="icon" style="font-size: 16px; color: var(--text-dim);">edit</span>
         </span>
-        <span class="switch-state-tag" id="sub_r2">स्थिति: बंद (OFF)</span>
+        <span class="switch-state-tag" id="sub_r2">State: OFF</span>
       </div>
       <label class="cyber-toggle">
         <input type="checkbox" id="toggle_r2" onchange="handleSwitch(2, this.checked)">
@@ -449,64 +513,62 @@
 
     <!-- PWM Regulation -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-      <span style="font-size:14px; font-weight:800; color:var(--text-dim);">PWM ड्यूटी रेगुलेशन:</span>
-      <strong id="pwm_val_txt" style="color:var(--primary); font-family: monospace; font-size:17px;">0</strong>
+      <span style="font-size:13px; font-weight:700; color:var(--text-dim);">PWM Duty Regulation:</span>
+      <strong id="pwm_val_txt" style="color:var(--primary); font-family: monospace; font-size:16px;">0</strong>
     </div>
     <input type="range" min="0" max="255" value="0" id="pwm_slider" oninput="document.getElementById('pwm_val_txt').innerText=this.value" onchange="commitPWM(this.value)">
   </section>
 
-  <!-- Real-Time Progress-Tracked OTA Updating -->
+  <!-- Live Progress OTA Section -->
   <section class="app-card">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size:16px; font-weight:900; color:var(--primary); display:flex; align-items:center; gap:6px;">
-        <span class="icon">cloud_sync</span> वैश्विक OTA लाइव प्रोग्रेस
+      <h3 style="font-size:15px; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:6px;">
+        <span class="icon">cloud_sync</span> Remote GitHub OTA
       </h3>
-      <span id="ota_percent_badge" style="font-size: 15px; font-weight: 900; font-family: monospace; color: var(--primary);">0%</span>
+      <span id="ota_percent_badge" style="font-size: 14px; font-weight: 800; font-family: monospace; color: var(--primary);">0%</span>
     </div>
 
     <div class="ota-progress-box">
       <div class="progress-bar-bg">
         <div class="progress-bar-fill" id="ota_bar_fill"></div>
       </div>
-      <div style="display: flex; justify-content: space-between; font-size: 12.5px; color: var(--text-dim);">
-        <span id="ota_status_stage">स्टैंडबाय (Ready)</span>
+      <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim);">
+        <span id="ota_status_stage">Standby (Ready)</span>
         <span id="ota_bytes_metric">0 KB / 0 KB</span>
       </div>
     </div>
 
     <button class="btn-action btn-p" onclick="triggerOTA()">
-      <span class="icon">download</span> GitHub Releases से फ्लैश करें
+      <span class="icon">download</span> Flash Latest Firmware
     </button>
   </section>
 
   <!-- Edge Intent AI Engine -->
   <section class="app-card" style="border-color:var(--ai);">
-    <h3 style="color:var(--ai); font-size:15px; font-weight:900;">AI नेचुरल लैंग्वेज एज कंट्रोल</h3>
-    <input type="text" id="ai_prompt_txt" placeholder="उदा. 'लाइट चालू करो', 'all off', 'night dim'">
-    <button class="btn-action btn-ai" onclick="submitAI()">AI निष्पादित करें</button>
+    <h3 style="color:var(--ai); font-size:15px; font-weight:800;">Edge AI Natural Intent Engine</h3>
+    <input type="text" id="ai_prompt_txt" placeholder="e.g., 'turn on all lights', 'sleep mode', 'dim to 30%'">
+    <button class="btn-action btn-ai" onclick="submitAI()">Execute Intent</button>
   </section>
 
-  <div class="log-strip" id="system_log">क्लाउड बैकएंड से सुरक्षित रूप से कनेक्टेड।</div>
+  <div class="log-strip" id="system_log">Cloud Gateway Securely Connected.</div>
 </div>
 
 <script>
   const firebaseConfig = {
-    apiKey: "AIzaSyCH8lBCeYYnTiZ3u-Z6Gs1OmhBf3R_b0i4",
-    authDomain: "tubewell-grid-1425b.firebaseapp.com",
-    databaseURL: "https://tubewell-grid-1425b-default-rtdb.firebaseio.com",
-    projectId: "tubewell-grid-1425b",
-    storageBucket: "tubewell-grid-1425b.firebasestorage.app",
-    messagingSenderId: "76348823069",
-    appId: "1:76348823069:web:3d6c60a5ebf1ffe29618f4"
+    apiKey: "YOUR_FIREBASE_API_KEY",
+    authDomain: "smarthub-controller-default-rtdb.firebaseio.com",
+    databaseURL: "https://smarthub-controller-default-rtdb.firebaseio.com",
+    projectId: "smarthub-controller",
+    storageBucket: "smarthub-controller.firebasestorage.app",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
   };
 
   firebase.initializeApp(firebaseConfig);
   const rtdb = firebase.database();
   let currentTarget = "all";
 
-  // ==========================================
-  // PIN AUTHENTICATION & RECOVERY PROTOCOL
-  // ==========================================
+  // Check persisted session token on load
   function checkSession() {
     if (sessionStorage.getItem("smarthub_auth") === "true") {
       unlockDashboard();
@@ -515,31 +577,31 @@
 
   async function verifyLoginPIN() {
     const input = document.getElementById('input_login_pin').value.trim();
-    if (!input) return alert("कृपया पिन दर्ज करें।");
+    if (!input) return alert("Please enter your PIN.");
 
     try {
       const snap = await rtdb.ref('/smarthub/auth').once('value');
       const authData = snap.val();
 
-      // Robust string coercion and fallback
-      const serverPin = (authData && authData.pin !== undefined) 
-        ? String(authData.pin).trim() 
+      // Fallback to "8354" if database node is blank
+      const serverPin = (authData && authData.pin !== undefined)
+        ? String(authData.pin).trim()
         : "8354";
 
       if (input === serverPin || input === "8354") {
         sessionStorage.setItem("smarthub_auth", "true");
         unlockDashboard();
       } else {
-        alert("अमान्य सुरक्षा पिन! पुनः प्रयास करें।");
+        alert("Invalid security PIN. Please try again.");
         document.getElementById('input_login_pin').value = '';
       }
     } catch (e) {
-      console.warn("Offline/Default Auth Triggered:", e);
+      // Offline fallback
       if (input === "8354") {
         sessionStorage.setItem("smarthub_auth", "true");
         unlockDashboard();
       } else {
-        alert("डेटाबेस से संपर्क नहीं हो सका। कृपया सुरक्षा पिन जांचें।");
+        alert("Database connection error. Verify Firebase Rules.");
       }
     }
   }
@@ -572,7 +634,7 @@
     const newPin = document.getElementById('rec_new_pin').value.trim();
 
     if (!mobile || !word || newPin.length < 4) {
-      return alert("कृपया सत्यापन के लिए मोबाइल, सीक्रेट वर्ड और कम से कम 4-अंकों का नया पिन भरें।");
+      return alert("Please provide mobile, security word, and a new 4+ digit PIN.");
     }
 
     try {
@@ -584,19 +646,19 @@
 
       if (mobile === regMobile && word === regWord) {
         await rtdb.ref('/smarthub/auth/pin').set(String(newPin));
-        alert(`पिन सफलतापूर्वक रीसेट किया गया! आपका नया पिन: ${newPin}`);
+        alert(`PIN successfully reset to: ${newPin}`);
         sessionStorage.setItem("smarthub_auth", "true");
         unlockDashboard();
       } else {
-        alert("मास्टर सत्यापन विफल! मोबाइल नंबर या सिक्योरिटी वर्ड मेल नहीं खाता।");
+        alert("Verification failed: Mobile number or Security Word does not match.");
       }
     } catch (err) {
-      alert("प्रमाणीकरण सर्वर से संपर्क विफल रहा।");
+      alert("Authentication server unreachable.");
     }
   }
 
   async function openChangePinFlow() {
-    const oldPin = prompt("वर्तमान सुरक्षा पिन दर्ज करें:");
+    const oldPin = prompt("Enter Current PIN:");
     if (!oldPin) return;
 
     try {
@@ -604,34 +666,31 @@
       const curPin = snap.val() !== null ? String(snap.val()).trim() : "8354";
 
       if (oldPin.trim() === curPin || oldPin.trim() === "8354") {
-        const newP = prompt("नया 4-अंकों का पिन दर्ज करें:");
+        const newP = prompt("Enter New 4-Digit PIN:");
         if (newP && newP.trim().length >= 4) {
           await rtdb.ref('/smarthub/auth/pin').set(String(newP.trim()));
-          alert("पिन सफलतापूर्वक अपडेट हो गया!");
+          alert("PIN updated successfully.");
         }
       } else {
-        alert("गलत वर्तमान पिन!");
+        alert("Incorrect current PIN.");
       }
     } catch (e) {
-      alert("पिन अपडेट विफल रहा।");
+      alert("PIN update failed.");
     }
   }
 
-  // ==========================================
-  // REAL-TIME DASHBOARD LISTENERS & HEALTH
-  // ==========================================
+  // Real-time Telemetry & Heartbeat Listeners
   function initTelemetryListeners() {
     let lastHeartbeatTime = Date.now();
 
-    // Stream connectivity heartbeat monitor
     setInterval(() => {
       const diff = Date.now() - lastHeartbeatTime;
       const streamBox = document.getElementById('stream_status');
       if (diff > 12000) {
-        streamBox.innerText = "अवरुद्ध";
+        streamBox.innerText = "STALLED";
         streamBox.style.color = "var(--danger)";
       } else {
-        streamBox.innerText = "सक्रिय";
+        streamBox.innerText = "LIVE";
         streamBox.style.color = "var(--success)";
       }
     }, 4000);
@@ -641,24 +700,24 @@
       const d = snap.val();
       if (!d) return;
 
-      document.getElementById('fw_badge').innerText = 'v' + (d.version || '2.6.0');
+      document.getElementById('fw_badge').innerText = 'v' + (d.version || '2.7.0');
       document.getElementById('rssi_val').innerText = (d.rssi || 0) + ' dBm';
       document.getElementById('heap_val').innerText = Math.round((d.free_heap || 0) / 1024) + ' KB';
 
-      // Self-Correction Engine Status
+      // EEPROM Checksum Status
       const eepromBox = document.getElementById('eeprom_status');
       if (d.eeprom_health === "REPAIRED") {
-        eepromBox.innerText = "सुधारा गया";
+        eepromBox.innerText = "REPAIRED";
         eepromBox.style.color = "var(--warning)";
       } else if (d.eeprom_health === "VALID") {
-        eepromBox.innerText = "वैध (CRC)";
+        eepromBox.innerText = "PASSED";
         eepromBox.style.color = "var(--success)";
       } else {
-        eepromBox.innerText = "दोषपूर्ण";
+        eepromBox.innerText = "FAULT";
         eepromBox.style.color = "var(--danger)";
       }
 
-      // Sync Switch States
+      // Sync Actuator States
       const t1 = document.getElementById('toggle_r1');
       const t2 = document.getElementById('toggle_r2');
       t1.checked = !!d.master_r1;
@@ -666,24 +725,44 @@
 
       document.getElementById('card_r1').classList.toggle('active', !!d.master_r1);
       document.getElementById('card_r2').classList.toggle('active', !!d.master_r2);
-      document.getElementById('sub_r1').innerText = d.master_r1 ? "स्थिति: चालू (ON)" : "स्थिति: बंद (OFF)";
-      document.getElementById('sub_r2').innerText = d.master_r2 ? "स्थिति: चालू (ON)" : "स्थिति: बंद (OFF)";
+      document.getElementById('sub_r1').innerText = d.master_r1 ? "State: ON" : "State: OFF";
+      document.getElementById('sub_r2').innerText = d.master_r2 ? "State: ON" : "State: OFF";
 
       if (d.pwm !== undefined) {
         document.getElementById('pwm_val_txt').innerText = d.pwm;
         document.getElementById('pwm_slider').value = d.pwm;
       }
 
+      // Slave Connection Verification
+      if (d.slaves && Array.isArray(d.slaves)) {
+        d.slaves.forEach(s => {
+          const pill = document.getElementById(`slave_box_${s.id}`);
+          const link = document.getElementById(`link_status_${s.id}`);
+          if (pill && link) {
+            if (s.online) {
+              pill.className = "slave-pill online";
+              link.innerText = `Connected (${s.latency_ms || 12}ms)`;
+              link.style.color = "var(--success)";
+            } else {
+              pill.className = "slave-pill offline";
+              link.innerText = "Offline / Timeout";
+              link.style.color = "var(--danger)";
+            }
+          }
+        });
+      }
+
       if (d.ai_log) document.getElementById('system_log').innerText = d.ai_log;
     });
 
+    // OTA Real-time Track
     rtdb.ref('/smarthub/ota_progress').on('value', snap => {
       const p = snap.val();
       if (!p) return;
       const percent = Math.min(100, Math.max(0, p.percent || 0));
       document.getElementById('ota_percent_badge').innerText = percent + '%';
       document.getElementById('ota_bar_fill').style.width = percent + '%';
-      document.getElementById('ota_status_stage').innerText = p.status || 'स्टैंडबाय';
+      document.getElementById('ota_status_stage').innerText = p.status || 'Standby';
 
       if (p.total_bytes && p.total_bytes > 0) {
         const curKB = Math.round((p.current_bytes || 0) / 1024);
@@ -697,12 +776,12 @@
     currentTarget = t;
     document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('system_log').innerText = `लक्षित इकाई: ${t.toUpperCase()}`;
+    document.getElementById('system_log').innerText = `Target Unit: ${t.toUpperCase()}`;
   }
 
   function renameDevice(key, defaultVal) {
     const currentName = localStorage.getItem(key) || defaultVal;
-    const newName = prompt("नया नाम दर्ज करें:", currentName);
+    const newName = prompt("Enter custom label:", currentName);
     if (newName && newName.trim() !== "") {
       localStorage.setItem(key, newName.trim());
       loadLabels();
@@ -710,8 +789,8 @@
   }
 
   function loadLabels() {
-    document.getElementById('label_r1').innerText = localStorage.getItem('r1_name') || 'लोड / रिले 1';
-    document.getElementById('label_r2').innerText = localStorage.getItem('r2_name') || 'लोड / रिले 2';
+    document.getElementById('label_r1').innerText = localStorage.getItem('r1_name') || 'Load / Relay 1';
+    document.getElementById('label_r2').innerText = localStorage.getItem('r2_name') || 'Load / Relay 2';
   }
 
   function handleSwitch(ch, state) {
@@ -736,9 +815,9 @@
   }
 
   function triggerOTA() {
-    if (confirm("GitHub Releases से नया फर्मवेयर लोड करना चाहते हैं?")) {
+    if (confirm("Proceed with Over-The-Air firmware update from GitHub?")) {
       rtdb.ref('/smarthub/control/trigger_ota').set(true);
-      document.getElementById('system_log').innerText = "सुरक्षित OTA प्रक्रिया शुरू...";
+      document.getElementById('system_log').innerText = "Initiating OTA update process...";
     }
   }
 
