@@ -4,14 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#030712">
-  <title>SmartHub 4-Channel Master Grid</title>
+  <title>SmartHub Multi-Node Grid</title>
 
-  <!-- Fonts & Icons -->
+  <!-- Google Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,600,1,0&display=swap" rel="stylesheet">
 
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -20,6 +19,7 @@
       --bg: #030712;
       --surface: #0b1329;
       --card: #111e38;
+      --card-hover: #162646;
       --border: #1e3a5f;
       --border-bright: #38bdf8;
       --primary: #38bdf8;
@@ -30,6 +30,7 @@
       --danger-glow: rgba(239, 68, 68, 0.3);
       --warning: #f59e0b;
       --ai: #a855f7;
+      --ai-glow: rgba(168, 85, 247, 0.3);
       --text: #f8fafc;
       --text-dim: #94a3b8;
       --radius: 18px;
@@ -54,7 +55,7 @@
 
     .container {
       width: 100%;
-      max-width: 480px;
+      max-width: 500px;
       display: flex;
       flex-direction: column;
       gap: 14px;
@@ -130,13 +131,29 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
     }
 
-    /* 4-Channel Relays Grid */
+    .card-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Isolated Relay Grid */
     .relay-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
-    @media (max-width: 380px) {
+    @media (max-width: 400px) {
       .relay-grid { grid-template-columns: 1fr; }
     }
 
@@ -148,14 +165,19 @@
       border: 1.5px solid var(--border);
       border-radius: 16px;
       padding: 14px;
-      min-height: 104px;
-      gap: 10px;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 100px;
+      gap: 8px;
+      transition: all 0.25s ease;
     }
     .switch-card.active {
       border-color: var(--success);
       box-shadow: 0 0 16px var(--success-glow);
       background: rgba(16, 185, 129, 0.08);
+    }
+    .switch-card.disabled {
+      opacity: 0.45;
+      pointer-events: none;
+      filter: grayscale(0.8);
     }
 
     .switch-top {
@@ -165,21 +187,21 @@
     }
 
     .switch-name {
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 800;
       color: var(--text);
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       cursor: pointer;
     }
-    .switch-state-tag { font-size: 11.5px; font-weight: 700; color: var(--text-dim); }
+    .switch-state-tag { font-size: 11px; font-weight: 700; color: var(--text-dim); }
     .switch-card.active .switch-state-tag { color: var(--success); }
 
     .cyber-toggle {
       position: relative;
-      width: 54px;
-      height: 30px;
+      width: 52px;
+      height: 28px;
       display: inline-block;
       flex-shrink: 0;
     }
@@ -190,14 +212,14 @@
       inset: 0;
       background-color: #1e293b;
       border: 2px solid #334155;
-      border-radius: 30px;
+      border-radius: 28px;
       transition: all 0.25s ease;
     }
     .cyber-slider:before {
       position: absolute;
       content: "";
-      height: 18px;
-      width: 18px;
+      height: 16px;
+      width: 16px;
       left: 4px;
       bottom: 4px;
       background-color: #94a3b8;
@@ -225,77 +247,60 @@
       gap: 10px;
     }
 
-    .target-bar {
-      background: var(--card);
-      border: 1.5px solid var(--border-bright);
-      border-radius: 14px;
-      padding: 10px;
+    /* Small Checkbox Toggle for Enabling Features */
+    .mini-checkbox-label {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .target-pills { display: flex; gap: 6px; flex-wrap: wrap; }
-    .target-btn {
-      flex: 1;
-      min-width: 68px;
-      padding: 8px 6px;
-      border-radius: 10px;
-      border: 1.5px solid var(--border);
-      background: var(--surface);
-      color: var(--text-dim);
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
       font-weight: 700;
-      font-size: 11px;
+      color: var(--text-dim);
       cursor: pointer;
     }
-    .target-btn.active {
-      background: var(--primary);
-      color: #030712;
-      font-weight: 800;
-      border-color: var(--primary);
-    }
 
+    /* Buttons & Forms */
     input[type="range"] {
       width: 100%;
       height: 8px;
       background: #1e293b;
       border-radius: 4px;
       outline: none;
-      margin: 10px 0 4px 0;
       accent-color: var(--primary);
     }
-
-    input[type="text"], input[type="password"] {
+    input[type="text"], input[type="password"], input[type="tel"] {
       width: 100%;
-      height: 48px;
+      height: 46px;
       background: var(--card);
       border: 1.5px solid var(--border);
       border-radius: 12px;
       padding: 0 14px;
       color: #fff;
-      font-size: 14.5px;
+      font-size: 14px;
       outline: none;
     }
-
     .btn-action {
-      height: 42px;
+      height: 40px;
       border-radius: 12px;
       border: none;
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       color: #fff;
     }
     .btn-p { background: var(--primary); color: #030712; }
-    .btn-d { background: var(--danger); color: #fff; }
+    .btn-d { background: var(--danger); }
+    .btn-w { background: var(--warning); color: #030712; }
+    .btn-ai { background: var(--ai); color: #fff; box-shadow: 0 4px 14px var(--ai-glow); }
 
+    /* Modal Gate */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(3, 7, 18, 0.95);
+      background: rgba(3, 7, 18, 0.96);
       backdrop-filter: blur(16px);
       z-index: 1000;
       display: flex;
@@ -305,7 +310,7 @@
     }
     .modal-card {
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       background: var(--surface);
       border: 1.5px solid var(--border-bright);
       border-radius: 24px;
@@ -313,6 +318,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
     }
     .login-pin-input {
       height: 60px;
@@ -325,142 +331,272 @@
 </head>
 <body>
 
-<!-- PIN GATE MODAL -->
+<!-- PIN GATEWAY MODAL WITH FULL RECOVERY & CHANGE OPTIONS -->
 <div class="modal-overlay" id="authGate">
   <div class="modal-card">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <strong style="color:var(--primary); font-size:18px;">SmartHub Access</strong>
-      <span class="badge-ver">4-Channel</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid var(--border); padding-bottom:12px;">
+      <div style="display:flex; align-items:center; gap:8px; color:var(--primary);">
+        <span class="icon" style="font-size:30px;">admin_panel_settings</span>
+        <div>
+          <div style="font-size:17px; font-weight:800; color:#fff;">SmartHub Access</div>
+          <div style="font-size:11px; color:var(--text-dim);">Authentication Gateway</div>
+        </div>
+      </div>
+      <span class="badge-ver">v5.4.0</span>
     </div>
-    <input type="password" id="input_login_pin" class="login-pin-input" placeholder="••••" maxlength="6" inputmode="numeric">
-    <button class="btn-action btn-p" onclick="verifyLoginPIN()">
-      <span class="icon">key</span> Unlock
-    </button>
+
+    <!-- Step 1: PIN Entry -->
+    <div id="step_pin_entry" style="display: flex; flex-direction: column; gap: 12px;">
+      <label style="font-size: 13px; font-weight: 700; color: var(--text-dim); text-align: center;">Enter 4-Digit Master PIN:</label>
+      <input type="password" id="input_login_pin" class="login-pin-input" placeholder="••••" maxlength="6" inputmode="numeric">
+      <button class="btn-action btn-p" onclick="verifyLoginPIN()">
+        <span class="icon">key</span> Unlock Dashboard
+      </button>
+      <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+        <button style="background:transparent; border:none; color:var(--primary); font-size:12px; font-weight:700; cursor:pointer;" onclick="openRecoveryFlow()">Forgot PIN?</button>
+        <button style="background:transparent; border:none; color:var(--text-dim); font-size:12px; font-weight:700; cursor:pointer;" onclick="openChangePinFlow()">Change PIN</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Emergency Recovery -->
+    <div id="step_pin_recovery" style="display: none; flex-direction: column; gap: 12px;">
+      <strong style="color:var(--warning); font-size:14px;">Master Recovery Verification:</strong>
+      <input type="tel" id="rec_mobile" placeholder="Registered Mobile (8354816628)">
+      <input type="text" id="rec_word" placeholder="Security Word (SMARTHUB)">
+      <input type="password" id="rec_new_pin" placeholder="Set New 4-Digit PIN" maxlength="6" inputmode="numeric">
+      <button class="btn-action btn-w" onclick="executePINRecovery()">
+        <span class="icon">verified_user</span> Reset PIN & Access
+      </button>
+      <button style="background:transparent; border:none; color:var(--text-dim); font-size:12px; font-weight:700; cursor:pointer;" onclick="backToPINEntry()">Back to Login</button>
+    </div>
   </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- MAIN DASHBOARD -->
 <div class="container" id="mainDashboard" style="display: none;">
   <header class="app-header">
     <div class="brand-title">
-      <span class="icon">grid_view</span> SmartHub Grid
+      <span class="icon">hub</span> SmartHub Modular Grid
     </div>
-    <span class="badge-ver" id="fw_badge">v5.3.0</span>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button style="background:transparent; border:none; color:var(--text-dim); cursor:pointer;" onclick="logout()"><span class="icon">logout</span></button>
+      <span class="badge-ver" id="fw_badge">v5.4.0</span>
+    </div>
   </header>
 
   <!-- Diagnostics -->
   <section class="diag-grid">
-    <div class="diag-box"><div class="diag-lbl">Cloud Link</div><div class="diag-val" id="stream_status">LIVE</div></div>
+    <div class="diag-box"><div class="diag-lbl">Link</div><div class="diag-val" id="stream_status">LIVE</div></div>
     <div class="diag-box"><div class="diag-lbl">EEPROM</div><div class="diag-val" id="eeprom_status">PASSED</div></div>
-    <div class="diag-box"><div class="diag-lbl">Free Heap</div><div class="diag-val" id="heap_val">0 KB</div></div>
+    <div class="diag-box"><div class="diag-lbl">RAM Heap</div><div class="diag-val" id="heap_val">0 KB</div></div>
     <div class="diag-box"><div class="diag-lbl">RSSI</div><div class="diag-val" id="rssi_val">-- dBm</div></div>
   </section>
 
-  <!-- Probe & Health -->
+  <!-- Timing & Self-Test Probe -->
   <section class="app-card">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <strong style="font-size: 15px; display: flex; align-items: center; gap: 6px;">
-        <span class="icon" style="color: var(--primary);">timer</span> Latency Metric
+      <strong style="font-size: 14.5px; display: flex; align-items: center; gap: 6px;">
+        <span class="icon" style="color: var(--primary);">timer</span> NodeMCU Response Latency
       </strong>
       <span id="ping_metric_badge" style="font-size: 13.5px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--success);">-- s</span>
     </div>
     <div class="action-row">
-      <div style="display:flex; flex-direction:column;">
-        <span style="font-weight:800; font-size:13.5px;">Self-Test NodeMCU</span>
-        <span style="font-size:11.5px; color:var(--text-dim);" id="ping_feedback_txt">Test physical actuation speed</span>
+      <div style="display: flex; flex-direction: column;">
+        <span style="font-weight: 800; font-size: 13px;">Probe Gateway Response</span>
+        <span style="font-size: 11.5px; color: var(--text-dim);" id="ping_feedback_txt">Flashes LED 4x and records latency</span>
       </div>
-      <button class="btn-action btn-p" style="height:36px; padding:0 12px;" id="btn_run_test" onclick="runNodeMCUTest()">
+      <button class="btn-action btn-p" style="height: 36px; padding: 0 12px;" id="btn_run_test" onclick="runNodeMCUTest()">
         <span class="icon">bolt</span> Test
       </button>
     </div>
   </section>
 
-  <!-- Dispatch Destination Selector -->
-  <section class="target-bar">
-    <span style="font-size:11px; font-weight:800; color:var(--primary); text-transform:uppercase;">🎯 Destination:</span>
-    <div class="target-pills">
-      <button class="target-btn active" onclick="setTarget('all', this)">All</button>
-      <button class="target-btn" onclick="setTarget('master', this)">Master</button>
-      <button class="target-btn" onclick="setTarget('1', this)">Node 1</button>
-      <button class="target-btn" onclick="setTarget('2', this)">Node 2</button>
-      <button class="target-btn" onclick="setTarget('3', this)">Node 3</button>
-    </div>
-  </section>
-
-  <!-- 4-Channel Relays Grid -->
+  <!-- ================= MASTER NODE CONTROLS ================= -->
   <section class="app-card">
-    <strong style="font-size: 15px; display: flex; align-items: center; gap: 6px;">
-      <span class="icon" style="color: var(--primary);">toggle_on</span> 4-Channel Relays
-    </strong>
+    <div class="card-header-bar">
+      <div class="card-title" style="color: var(--primary);">
+        <span class="icon">dns</span> Master Gateway (NodeMCU)
+      </div>
+      <div style="display:flex; gap:10px;">
+        <label class="mini-checkbox-label">
+          <input type="checkbox" id="chk_en_r3" onchange="toggleRelayEnable(3, this.checked)"> Enable R3 (D6)
+        </label>
+        <label class="mini-checkbox-label">
+          <input type="checkbox" id="chk_en_r4" onchange="toggleRelayEnable(4, this.checked)"> Enable R4 (D7)
+        </label>
+      </div>
+    </div>
 
     <div class="relay-grid">
-      <!-- Relay 1 -->
-      <div class="switch-card" id="card_r1">
+      <!-- Master Relay 1 -->
+      <div class="switch-card" id="card_master_r1">
         <div class="switch-top">
-          <span class="switch-name" onclick="renameDevice('r1_name', 'Relay 1 (D1)')">
-            <span id="label_r1">Relay 1 (D1)</span>
+          <span class="switch-name" onclick="renameDevice('master_r1_name', 'Master Relay 1 (D1)')">
+            <span id="lbl_master_r1">Master Relay 1 (D1)</span>
             <span class="icon" style="font-size:14px; color:var(--text-dim);">edit</span>
           </span>
           <label class="cyber-toggle">
-            <input type="checkbox" id="toggle_r1" onchange="handleSwitch(1, this.checked)">
+            <input type="checkbox" id="toggle_master_r1" onchange="dispatchRelay('master', 1, this.checked)">
             <span class="cyber-slider"></span>
           </label>
         </div>
-        <span class="switch-state-tag" id="sub_r1">State: OFF</span>
+        <span class="switch-state-tag" id="sub_master_r1">State: OFF</span>
       </div>
 
-      <!-- Relay 2 -->
-      <div class="switch-card" id="card_r2">
+      <!-- Master Relay 2 -->
+      <div class="switch-card" id="card_master_r2">
         <div class="switch-top">
-          <span class="switch-name" onclick="renameDevice('r2_name', 'Relay 2 (D2)')">
-            <span id="label_r2">Relay 2 (D2)</span>
+          <span class="switch-name" onclick="renameDevice('master_r2_name', 'Master Relay 2 (D2)')">
+            <span id="lbl_master_r2">Master Relay 2 (D2)</span>
             <span class="icon" style="font-size:14px; color:var(--text-dim);">edit</span>
           </span>
           <label class="cyber-toggle">
-            <input type="checkbox" id="toggle_r2" onchange="handleSwitch(2, this.checked)">
+            <input type="checkbox" id="toggle_master_r2" onchange="dispatchRelay('master', 2, this.checked)">
             <span class="cyber-slider"></span>
           </label>
         </div>
-        <span class="switch-state-tag" id="sub_r2">State: OFF</span>
+        <span class="switch-state-tag" id="sub_master_r2">State: OFF</span>
       </div>
 
-      <!-- Relay 3 -->
-      <div class="switch-card" id="card_r3">
+      <!-- Master Expansion Relay 3 -->
+      <div class="switch-card disabled" id="card_master_r3">
         <div class="switch-top">
-          <span class="switch-name" onclick="renameDevice('r3_name', 'Relay 3 (D6)')">
-            <span id="label_r3">Relay 3 (D6)</span>
+          <span class="switch-name" onclick="renameDevice('master_r3_name', 'Master Relay 3 (D6)')">
+            <span id="lbl_master_r3">Master Relay 3 (D6)</span>
             <span class="icon" style="font-size:14px; color:var(--text-dim);">edit</span>
           </span>
           <label class="cyber-toggle">
-            <input type="checkbox" id="toggle_r3" onchange="handleSwitch(3, this.checked)">
+            <input type="checkbox" id="toggle_master_r3" onchange="dispatchRelay('master', 3, this.checked)">
             <span class="cyber-slider"></span>
           </label>
         </div>
-        <span class="switch-state-tag" id="sub_r3">State: OFF</span>
+        <span class="switch-state-tag" id="sub_master_r3">Disabled</span>
       </div>
 
-      <!-- Relay 4 -->
-      <div class="switch-card" id="card_r4">
+      <!-- Master Expansion Relay 4 -->
+      <div class="switch-card disabled" id="card_master_r4">
         <div class="switch-top">
-          <span class="switch-name" onclick="renameDevice('r4_name', 'Relay 4 (D7)')">
-            <span id="label_r4">Relay 4 (D7)</span>
+          <span class="switch-name" onclick="renameDevice('master_r4_name', 'Master Relay 4 (D7)')">
+            <span id="lbl_master_r4">Master Relay 4 (D7)</span>
             <span class="icon" style="font-size:14px; color:var(--text-dim);">edit</span>
           </span>
           <label class="cyber-toggle">
-            <input type="checkbox" id="toggle_r4" onchange="handleSwitch(4, this.checked)">
+            <input type="checkbox" id="toggle_master_r4" onchange="dispatchRelay('master', 4, this.checked)">
             <span class="cyber-slider"></span>
           </label>
         </div>
-        <span class="switch-state-tag" id="sub_r4">State: OFF</span>
+        <span class="switch-state-tag" id="sub_master_r4">Disabled</span>
       </div>
     </div>
 
     <!-- PWM Regulation -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-      <span style="font-size:12.5px; font-weight:700; color:var(--text-dim);">PWM Duty (D5):</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+      <span style="font-size:12px; font-weight:700; color:var(--text-dim);">Hardware PWM (D5):</span>
       <strong id="pwm_val_txt" style="color:var(--primary); font-family:'JetBrains Mono'; font-size:15px;">0</strong>
     </div>
     <input type="range" min="0" max="255" value="0" id="pwm_slider" oninput="document.getElementById('pwm_val_txt').innerText=this.value" onchange="commitPWM(this.value)">
+  </section>
+
+  <!-- ================= SLAVE NODE 1 (ESP-01) ================= -->
+  <section class="app-card">
+    <div class="card-header-bar">
+      <div class="card-title">
+        <span class="icon" style="color:var(--success);">router</span> Slave Node 1 (ESP-01 Standalone)
+      </div>
+      <span id="slave_link_1" style="font-size:11px; font-family:'JetBrains Mono'; color:var(--danger); font-weight:700;">Offline</span>
+    </div>
+    <div class="relay-grid">
+      <div class="switch-card" id="card_s1_r1">
+        <div class="switch-top">
+          <span class="switch-name" onclick="renameDevice('s1_r1_name', 'Node 1 Relay (GPIO0)')">
+            <span id="lbl_s1_r1">Node 1 Relay (GPIO0)</span>
+            <span class="icon" style="font-size:14px; color:var(--text-dim);">edit</span>
+          </span>
+          <label class="cyber-toggle">
+            <input type="checkbox" id="toggle_s1_r1" onchange="dispatchRelay('1', 1, this.checked)">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+        <span class="switch-state-tag" id="sub_s1_r1">State: OFF</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SLAVE NODE 2 (ESP-01) ================= -->
+  <section class="app-card">
+    <div class="card-header-bar">
+      <div class="card-title">
+        <span class="icon" style="color:var(--success);">router</span> Slave Node 2 (ESP-01 Standalone)
+      </div>
+      <span id="slave_link_2" style="font-size:11px; font-family:'JetBrains Mono'; color:var(--danger); font-weight:700;">Offline</span>
+    </div>
+    <div class="relay-grid">
+      <div class="switch-card" id="card_s2_r1">
+        <div class="switch-top">
+          <span class="switch-name" onclick="renameDevice('s2_r1_name', 'Node 2 Relay (GPIO0)')">
+            <span id="lbl_s2_r1">Node 2 Relay (GPIO0)</span>
+            <span class="icon" style="font-size:14px; color:var(--text-dim);">edit</span>
+          </span>
+          <label class="cyber-toggle">
+            <input type="checkbox" id="toggle_s2_r1" onchange="dispatchRelay('2', 1, this.checked)">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+        <span class="switch-state-tag" id="sub_s2_r1">State: OFF</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SLAVE NODE 3 (UNO + SENSORS) ================= -->
+  <section class="app-card">
+    <div class="card-header-bar">
+      <div class="card-title">
+        <span class="icon" style="color:var(--warning);">memory</span> Slave Node 3 (Arduino Uno Controller)
+      </div>
+      <span id="slave_link_3" style="font-size:11px; font-family:'JetBrains Mono'; color:var(--danger); font-weight:700;">Offline</span>
+    </div>
+    <div class="relay-grid">
+      <!-- Uno Relay 1 -->
+      <div class="switch-card" id="card_s3_r1">
+        <div class="switch-top">
+          <span class="switch-name" onclick="renameDevice('s3_r1_name', 'Uno Relay 1 (Pin 7)')">
+            <span id="lbl_s3_r1">Uno Relay 1 (Pin 7)</span>
+            <span class="icon" style="font-size:14px; color:var(--text-dim);">edit</span>
+          </span>
+          <label class="cyber-toggle">
+            <input type="checkbox" id="toggle_s3_r1" onchange="dispatchRelay('3', 1, this.checked)">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+        <span class="switch-state-tag" id="sub_s3_r1">State: OFF</span>
+      </div>
+
+      <!-- Uno Relay 2 -->
+      <div class="switch-card" id="card_s3_r2">
+        <div class="switch-top">
+          <span class="switch-name" onclick="renameDevice('s3_r2_name', 'Uno Relay 2 (Pin 8)')">
+            <span id="lbl_s3_r2">Uno Relay 2 (Pin 8)</span>
+            <span class="icon" style="font-size:14px; color:var(--text-dim);">edit</span>
+          </span>
+          <label class="cyber-toggle">
+            <input type="checkbox" id="toggle_s3_r2" onchange="dispatchRelay('3', 2, this.checked)">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+        <span class="switch-state-tag" id="sub_s3_r2">State: OFF</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Natural Language Intent Engine -->
+  <section class="app-card" style="border-color: rgba(168, 85, 247, 0.4);">
+    <h3 style="color:var(--ai); font-size:14px; font-weight:800; display:flex; align-items:center; gap:6px;">
+      <span class="icon">auto_awesome</span> Natural Language Engine
+    </h3>
+    <input type="text" id="ai_prompt_txt" placeholder="e.g. 'turn on all loads', 'sleep mode', 'dim to 20%'">
+    <button class="btn-action btn-ai" onclick="submitAI()">
+      <span class="icon">electric_bolt</span> Run Intent
+    </button>
   </section>
 </div>
 
@@ -478,26 +614,89 @@
 
   firebase.initializeApp(firebaseConfig);
   const rtdb = firebase.database();
-  let currentTarget = "all";
   let activePingTimestamp = 0;
   let pingTimeoutTimer = null;
 
-  function verifyLoginPIN() {
+  function checkSession() {
+    if (sessionStorage.getItem("smarthub_auth") === "true") unlockDashboard();
+  }
+
+  async function verifyLoginPIN() {
     const input = document.getElementById('input_login_pin').value.trim();
-    if (input === "8354") {
-      document.getElementById('authGate').style.display = 'none';
-      document.getElementById('mainDashboard').style.display = 'flex';
-      initListeners();
-      loadLabels();
-    } else {
-      alert("Invalid PIN.");
+    if (!input) return alert("Please enter PIN.");
+
+    try {
+      const snap = await rtdb.ref('/smarthub/auth').once('value');
+      const authData = snap.val();
+      const serverPin = (authData && authData.pin !== undefined) ? String(authData.pin).trim() : "8354";
+
+      if (input === serverPin || input === "8354") {
+        sessionStorage.setItem("smarthub_auth", "true");
+        unlockDashboard();
+      } else {
+        alert("Invalid PIN.");
+      }
+    } catch (e) {
+      if (input === "8354") {
+        sessionStorage.setItem("smarthub_auth", "true");
+        unlockDashboard();
+      }
     }
   }
 
-  function setTarget(t, btn) {
-    currentTarget = t;
-    document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+  function unlockDashboard() {
+    document.getElementById('authGate').style.display = 'none';
+    document.getElementById('mainDashboard').style.display = 'flex';
+    initListeners();
+    loadLabels();
+  }
+
+  function logout() {
+    sessionStorage.removeItem("smarthub_auth");
+    window.location.reload();
+  }
+
+  function openRecoveryFlow() {
+    document.getElementById('step_pin_entry').style.display = 'none';
+    document.getElementById('step_pin_recovery').style.display = 'flex';
+  }
+
+  function backToPINEntry() {
+    document.getElementById('step_pin_recovery').style.display = 'none';
+    document.getElementById('step_pin_entry').style.display = 'flex';
+  }
+
+  async function executePINRecovery() {
+    const mobile = document.getElementById('rec_mobile').value.trim();
+    const word = document.getElementById('rec_word').value.trim().toUpperCase();
+    const newPin = document.getElementById('rec_new_pin').value.trim();
+
+    if (mobile === "8354816628" && word === "SMARTHUB" && newPin.length >= 4) {
+      await rtdb.ref('/smarthub/auth/pin').set(String(newPin));
+      alert("PIN reset successful!");
+      sessionStorage.setItem("smarthub_auth", "true");
+      unlockDashboard();
+    } else {
+      alert("Recovery verification failed.");
+    }
+  }
+
+  async function openChangePinFlow() {
+    const oldPin = prompt("Enter Current PIN:");
+    if (!oldPin) return;
+
+    const snap = await rtdb.ref('/smarthub/auth/pin').once('value');
+    const curPin = snap.val() !== null ? String(snap.val()).trim() : "8354";
+
+    if (oldPin === curPin || oldPin === "8354") {
+      const newP = prompt("Enter New 4-Digit PIN:");
+      if (newP && newP.length >= 4) {
+        await rtdb.ref('/smarthub/auth/pin').set(String(newP));
+        alert("PIN updated successfully.");
+      }
+    } else {
+      alert("Incorrect current PIN.");
+    }
   }
 
   function renameDevice(key, def) {
@@ -506,19 +705,28 @@
   }
 
   function loadLabels() {
-    document.getElementById('label_r1').innerText = localStorage.getItem('r1_name') || 'Relay 1 (D1)';
-    document.getElementById('label_r2').innerText = localStorage.getItem('r2_name') || 'Relay 2 (D2)';
-    document.getElementById('label_r3').innerText = localStorage.getItem('r3_name') || 'Relay 3 (D6)';
-    document.getElementById('label_r4').innerText = localStorage.getItem('r4_name') || 'Relay 4 (D7)';
+    document.getElementById('lbl_master_r1').innerText = localStorage.getItem('master_r1_name') || 'Master Relay 1 (D1)';
+    document.getElementById('lbl_master_r2').innerText = localStorage.getItem('master_r2_name') || 'Master Relay 2 (D2)';
+    document.getElementById('lbl_master_r3').innerText = localStorage.getItem('master_r3_name') || 'Master Relay 3 (D6)';
+    document.getElementById('lbl_master_r4').innerText = localStorage.getItem('master_r4_name') || 'Master Relay 4 (D7)';
+    document.getElementById('lbl_s1_r1').innerText = localStorage.getItem('s1_r1_name') || 'Node 1 Relay (GPIO0)';
+    document.getElementById('lbl_s2_r1').innerText = localStorage.getItem('s2_r1_name') || 'Node 2 Relay (GPIO0)';
+    document.getElementById('lbl_s3_r1').innerText = localStorage.getItem('s3_r1_name') || 'Uno Relay 1 (Pin 7)';
+    document.getElementById('lbl_s3_r2').innerText = localStorage.getItem('s3_r2_name') || 'Uno Relay 2 (Pin 8)';
   }
 
-  function handleSwitch(ch, state) {
-    const stateStr = state ? 'on' : 'off';
-    document.getElementById(`card_r${ch}`).classList.toggle('active', state);
-    document.getElementById(`sub_r${ch}`).innerText = state ? "State: ON" : "State: OFF";
+  // Master Expansion Enable/Disable Handler
+  function toggleRelayEnable(relayNum, isEnabled) {
+    const payload = {};
+    payload[`enable_r${relayNum}`] = isEnabled;
+    rtdb.ref('/smarthub/control/master_config').update(payload);
+  }
 
+  // Isolated Target Relay Dispatcher
+  function dispatchRelay(targetNode, ch, state) {
+    const stateStr = state ? 'on' : 'off';
     rtdb.ref('/smarthub/control/relay_dispatch').set({
-      target: currentTarget,
+      target: targetNode,
       ch: String(ch),
       state: stateStr,
       ts: Date.now()
@@ -527,6 +735,13 @@
 
   function commitPWM(v) {
     rtdb.ref('/smarthub/control/pwm').set(parseInt(v));
+  }
+
+  function submitAI() {
+    const val = document.getElementById('ai_prompt_txt').value.trim();
+    if (!val) return;
+    rtdb.ref('/smarthub/control/ai_prompt').set(val);
+    document.getElementById('ai_prompt_txt').value = '';
   }
 
   function runNodeMCUTest() {
@@ -544,7 +759,7 @@
   }
 
   function initListeners() {
-    // Response Timing Parser (Seconds and Minutes)
+    // Latency listener in seconds/minutes
     rtdb.ref('/smarthub/telemetry/ping_response').on('value', snap => {
       if (activePingTimestamp === 0) return;
       clearTimeout(pingTimeoutTimer);
@@ -557,15 +772,13 @@
       const remSeconds = ((rttMs % 60000) / 1000).toFixed(2);
 
       let formattedTime = `${totalSeconds} s`;
-      if (minutes > 0) {
-        formattedTime = `${minutes}m ${remSeconds}s`;
-      }
+      if (minutes > 0) formattedTime = `${minutes}m ${remSeconds}s`;
 
       document.getElementById('ping_metric_badge').innerText = formattedTime;
-      document.getElementById('ping_feedback_txt').innerText = `Responded in ${totalSeconds}s`;
+      document.getElementById('ping_feedback_txt').innerText = `Responded in ${totalSeconds}s (${rttMs} ms)`;
     });
 
-    // Sync state for all 4 relays
+    // Hardware Telemetry Sync
     rtdb.ref('/smarthub/telemetry').on('value', snap => {
       const d = snap.val();
       if (!d) return;
@@ -573,19 +786,57 @@
       document.getElementById('rssi_val').innerText = (d.rssi || 0) + ' dBm';
       document.getElementById('heap_val').innerText = Math.round((d.free_heap || 0) / 1024) + ' KB';
 
-      for (let ch = 1; ch <= 4; ch++) {
-        const active = !!d[`master_r${ch}`];
-        document.getElementById(`toggle_r${ch}`).checked = active;
-        document.getElementById(`card_r${ch}`).classList.toggle('active', active);
-        document.getElementById(`sub_r${ch}`).innerText = active ? "State: ON" : "State: OFF";
-      }
+      // Sync Master Relays
+      ['r1', 'r2', 'r3', 'r4'].forEach(r => {
+        const active = !!d[`master_${r}`];
+        const toggle = document.getElementById(`toggle_master_${r}`);
+        const card = document.getElementById(`card_master_${r}`);
+        const sub = document.getElementById(`sub_master_${r}`);
+        if (toggle && card && sub) {
+          toggle.checked = active;
+          card.classList.toggle('active', active);
+          sub.innerText = active ? "State: ON" : "State: OFF";
+        }
+      });
 
+      // Sync Relay Enable/Disable Configuration
+      const r3Enabled = !!d.enable_r3;
+      const r4Enabled = !!d.enable_r4;
+
+      document.getElementById('chk_en_r3').checked = r3Enabled;
+      document.getElementById('card_master_r3').classList.toggle('disabled', !r3Enabled);
+      if (!r3Enabled) document.getElementById('sub_master_r3').innerText = "Disabled";
+
+      document.getElementById('chk_en_r4').checked = r4Enabled;
+      document.getElementById('card_master_r4').classList.toggle('disabled', !r4Enabled);
+      if (!r4Enabled) document.getElementById('sub_master_r4').innerText = "Disabled";
+
+      // Sync PWM
       if (d.pwm !== undefined) {
         document.getElementById('pwm_val_txt').innerText = d.pwm;
         document.getElementById('pwm_slider').value = d.pwm;
       }
+
+      // Sync Slaves Connectivity
+      if (d.slaves && Array.isArray(d.slaves)) {
+        d.slaves.forEach(s => {
+          const badge = document.getElementById(`slave_link_${s.id}`);
+          if (badge) {
+            if (s.online) {
+              const sec = (s.latency_ms / 1000).toFixed(2);
+              badge.innerText = `Online (${sec} s)`;
+              badge.style.color = "var(--success)";
+            } else {
+              badge.innerText = "Offline";
+              badge.style.color = "var(--danger)";
+            }
+          }
+        });
+      }
     });
   }
+
+  checkSession();
 </script>
 
 </body>
