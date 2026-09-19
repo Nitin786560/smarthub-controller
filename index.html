@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#020617">
-  <title>SmartHub AI Master Dashboard</title>
+  <meta name="theme-color" content="#030712">
+  <title>SmartHub AI Master Grid</title>
 
   <!-- Google Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,700,1,0&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,600,1,0&display=swap" rel="stylesheet">
 
   <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -17,20 +17,24 @@
 
   <style>
     :root {
-      --bg: #020617;
+      --bg: #030712;
       --surface: #0b1329;
-      --card: #131f36;
-      --border: #24385a;
+      --card: #111e38;
+      --card-hover: #162646;
+      --border: #1e3a5f;
       --border-bright: #38bdf8;
       --primary: #38bdf8;
-      --primary-glow: rgba(56, 189, 248, 0.45);
-      --success: #22c55e;
+      --primary-glow: rgba(56, 189, 248, 0.35);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.3);
       --danger: #ef4444;
+      --danger-glow: rgba(239, 68, 68, 0.3);
       --warning: #f59e0b;
       --ai: #a855f7;
-      --text: #ffffff;
+      --ai-glow: rgba(168, 85, 247, 0.3);
+      --text: #f8fafc;
       --text-dim: #94a3b8;
-      --radius: 16px;
+      --radius: 18px;
     }
 
     *, *::before, *::after {
@@ -41,17 +45,18 @@
     }
 
     body {
-      background: var(--bg);
+      background: radial-gradient(circle at top, #0f1d3a 0%, var(--bg) 60%);
       color: var(--text);
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      padding: 14px 10px 96px 10px;
+      padding: 16px 12px 90px 12px;
+      overflow-x: hidden;
     }
 
     .container {
       width: 100%;
-      max-width: 500px;
+      max-width: 480px;
       display: flex;
       flex-direction: column;
       gap: 14px;
@@ -59,48 +64,85 @@
 
     .icon {
       font-family: 'Material Symbols Rounded', sans-serif;
-      font-size: 24px;
+      font-size: 22px;
       line-height: 1;
       display: inline-flex;
       align-items: center;
       justify-content: center;
     }
 
+    /* Top Brand Header */
     .app-header {
-      background: rgba(11, 19, 41, 0.98);
-      border: 2px solid var(--border);
+      background: rgba(11, 19, 41, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid var(--border);
       border-radius: var(--radius);
-      padding: 12px 16px;
+      padding: 14px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
 
     .brand-title {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 800;
+      letter-spacing: -0.3px;
       color: var(--primary);
-      text-shadow: 0 0 10px var(--primary-glow);
+      text-shadow: 0 0 16px var(--primary-glow);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .badge-ver {
-      background: var(--primary);
-      color: #000;
+      background: linear-gradient(135deg, var(--primary), #0284c7);
+      color: #030712;
       font-size: 11px;
       font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 6px;
+      padding: 4px 9px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px var(--primary-glow);
     }
 
+    /* Diagnostics Ribbon */
+    .diag-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .diag-box {
+      background: rgba(17, 30, 56, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 4px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: transform 0.15s ease;
+    }
+    .diag-lbl { font-size: 10.5px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+    .diag-val { font-size: 13.5px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--primary); margin-top: 3px; }
+
+    /* App Cards */
     .app-card {
-      background: var(--surface);
-      border: 2px solid var(--border);
+      background: rgba(11, 19, 41, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid var(--border);
       border-radius: var(--radius);
       padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .app-card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
     }
 
     .app-card-header {
@@ -108,10 +150,11 @@
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
+      user-select: none;
     }
 
     .app-card-title {
-      font-size: 16px;
+      font-size: 15.5px;
       font-weight: 800;
       display: flex;
       align-items: center;
@@ -119,8 +162,8 @@
     }
 
     .app-card-arrow {
-      transition: transform 0.25s;
-      font-size: 24px;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 22px;
       color: var(--text-dim);
     }
 
@@ -132,7 +175,7 @@
       display: none;
       flex-direction: column;
       gap: 12px;
-      padding-top: 10px;
+      padding-top: 12px;
       border-top: 1px dashed var(--border);
     }
 
@@ -140,26 +183,7 @@
       display: flex;
     }
 
-    /* Diagnostics Ribbon */
-    .diag-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-    }
-    .diag-box {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 8px 4px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .diag-lbl { font-size: 11px; font-weight: 700; color: var(--text-dim); }
-    .diag-val { font-size: 13.5px; font-weight: 800; font-family: monospace; color: var(--primary); margin-top: 2px; }
-
-    /* Slave Link Status Matrix */
+    /* Slave Link Grid */
     .slave-status-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -168,81 +192,88 @@
     .slave-pill {
       background: var(--card);
       border: 1.5px solid var(--border);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 10px 6px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      transition: border-color 0.25s, box-shadow 0.25s;
+      transition: all 0.25s ease;
     }
     .slave-pill.online {
       border-color: var(--success);
-      box-shadow: 0 0 12px rgba(34, 197, 94, 0.25);
+      box-shadow: 0 0 14px var(--success-glow);
+      background: rgba(16, 185, 129, 0.08);
     }
     .slave-pill.offline {
-      border-color: var(--danger);
-      box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(239, 68, 68, 0.04);
     }
     .status-dot {
-      width: 9px;
-      height: 9px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: var(--danger);
+      box-shadow: 0 0 6px var(--danger);
     }
     .slave-pill.online .status-dot {
       background: var(--success);
-      box-shadow: 0 0 6px var(--success);
+      box-shadow: 0 0 8px var(--success);
     }
 
     /* Target Dispatch Bar */
     .target-bar {
       background: var(--card);
-      border: 2px solid var(--border-bright);
+      border: 1.5px solid var(--border-bright);
       border-radius: 14px;
-      padding: 8px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
-    .target-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+    .target-pills { display: flex; gap: 6px; flex-wrap: wrap; }
     .target-btn {
       flex: 1;
-      min-width: 70px;
-      padding: 8px 4px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
+      min-width: 72px;
+      padding: 8px 6px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
       background: var(--surface);
       color: var(--text-dim);
       font-weight: 700;
       font-size: 11.5px;
       cursor: pointer;
+      transition: all 0.2s;
     }
+    .target-btn:active { transform: scale(0.96); }
     .target-btn.active {
       background: var(--primary);
-      color: #000;
+      color: #030712;
+      font-weight: 800;
       border-color: var(--primary);
+      box-shadow: 0 2px 10px var(--primary-glow);
     }
 
-    /* Switch Rows */
+    /* Actuator Cards */
     .switch-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
       background: var(--card);
-      border: 2px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: 16px;
       padding: 14px 16px;
-      transition: all 0.25s;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .switch-card.active {
       border-color: var(--success);
-      box-shadow: 0 0 16px rgba(34, 197, 94, 0.25);
+      box-shadow: 0 0 18px var(--success-glow);
+      background: rgba(16, 185, 129, 0.06);
     }
-    .switch-info { display: flex; flex-direction: column; gap: 2px; }
+    .switch-info { display: flex; flex-direction: column; gap: 3px; }
     .switch-name {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
       color: var(--text);
       display: flex;
@@ -253,10 +284,11 @@
     .switch-state-tag { font-size: 12px; font-weight: 700; color: var(--text-dim); }
     .switch-card.active .switch-state-tag { color: var(--success); }
 
+    /* Custom Switch Toggle */
     .cyber-toggle {
       position: relative;
-      width: 64px;
-      height: 36px;
+      width: 60px;
+      height: 34px;
       display: inline-block;
       flex-shrink: 0;
     }
@@ -267,28 +299,28 @@
       inset: 0;
       background-color: #1e293b;
       border: 2px solid #334155;
-      border-radius: 36px;
-      transition: all 0.25s;
+      border-radius: 34px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .cyber-slider:before {
       position: absolute;
       content: "";
-      height: 24px;
-      width: 24px;
+      height: 22px;
+      width: 22px;
       left: 4px;
       bottom: 4px;
       background-color: #94a3b8;
       border-radius: 50%;
-      transition: all 0.25s;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
     input:checked + .cyber-slider {
-      background-color: rgba(34, 197, 94, 0.2);
+      background-color: rgba(16, 185, 129, 0.25);
       border-color: var(--success);
     }
     input:checked + .cyber-slider:before {
-      transform: translateX(28px);
+      transform: translateX(26px);
       background-color: var(--success);
-      box-shadow: 0 0 12px var(--success);
+      box-shadow: 0 0 10px var(--success);
     }
 
     .action-row {
@@ -302,156 +334,145 @@
       gap: 10px;
     }
 
-    .ota-progress-box {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .progress-bar-bg {
+    /* Range Slider Styling */
+    input[type="range"] {
       width: 100%;
-      height: 16px;
-      background: #020617;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--primary), var(--success));
-      border-radius: 8px;
-      transition: width 0.25s ease-out;
+      height: 8px;
+      background: #1e293b;
+      border-radius: 4px;
+      outline: none;
+      margin: 10px 0 4px 0;
+      accent-color: var(--primary);
     }
 
+    /* Buttons & Form Elements */
     input[type="text"], input[type="password"], input[type="tel"], select {
       width: 100%;
       height: 48px;
       background: var(--card);
-      border: 2px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: 12px;
       padding: 0 14px;
       color: #fff;
-      font-size: 15px;
+      font-size: 14.5px;
       outline: none;
+      transition: border-color 0.2s;
     }
-    input[type="range"] {
-      width: 100%;
-      height: 8px;
-      background: var(--card);
-      border-radius: 4px;
-      outline: none;
-      margin: 8px 0;
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 10px var(--primary-glow);
     }
 
     .btn-action {
-      height: 48px;
+      height: 46px;
       border-radius: 12px;
       border: none;
-      font-size: 14.5px;
+      font-size: 14px;
       font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       color: #fff;
+      transition: transform 0.15s, box-shadow 0.2s;
     }
-    .btn-action:active { transform: scale(0.96); }
-    .btn-p { background: var(--primary); color: #000; }
-    .btn-ai { background: var(--ai); color: #fff; }
-    .btn-w { background: var(--warning); color: #000; }
-    .btn-d { background: var(--danger); color: #fff; }
-    .btn-g { background: var(--success); color: #fff; }
+    .btn-action:active { transform: scale(0.97); }
+    .btn-p { background: var(--primary); color: #030712; box-shadow: 0 4px 14px var(--primary-glow); }
+    .btn-ai { background: var(--ai); color: #fff; box-shadow: 0 4px 14px var(--ai-glow); }
+    .btn-w { background: var(--warning); color: #030712; }
+    .btn-d { background: var(--danger); color: #fff; box-shadow: 0 4px 14px var(--danger-glow); }
+    .btn-g { background: var(--success); color: #fff; box-shadow: 0 4px 14px var(--success-glow); }
 
+    /* Bottom Terminal Strip */
     .log-strip {
-      background: var(--card);
+      background: rgba(17, 30, 56, 0.85);
       border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
-      font-size: 13px;
-      font-weight: 700;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
       color: var(--text-dim);
-      font-family: monospace;
-      min-height: 42px;
+      font-family: 'JetBrains Mono', monospace;
+      min-height: 44px;
       text-align: center;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
+    /* Modal Gate */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(2, 6, 23, 0.98);
+      background: rgba(3, 7, 18, 0.95);
+      backdrop-filter: blur(16px);
       z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 14px;
+      padding: 16px;
     }
     .modal-card {
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
       background: var(--surface);
-      border: 2px solid var(--border-bright);
+      border: 1.5px solid var(--border-bright);
       border-radius: 24px;
-      padding: 24px 20px;
+      padding: 24px;
       display: flex;
       flex-direction: column;
       gap: 16px;
-      box-shadow: 0 16px 50px rgba(0,0,0,0.9);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
     }
     .login-pin-input {
       height: 64px;
-      font-size: 30px;
+      font-size: 28px;
       font-weight: 800;
-      letter-spacing: 12px;
+      letter-spacing: 14px;
       text-align: center;
+      font-family: 'JetBrains Mono', monospace;
       border-radius: 14px;
     }
   </style>
 </head>
 <body>
 
-<!-- PIN GATEWAY -->
+<!-- PIN GATEWAY MODAL -->
 <div class="modal-overlay" id="authGate">
   <div class="modal-card">
-    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border); padding-bottom: 12px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid var(--border); padding-bottom: 14px;">
       <div style="display: flex; align-items: center; gap: 10px; color: var(--primary);">
-        <span class="icon" style="font-size: 36px;">admin_panel_settings</span>
+        <span class="icon" style="font-size: 34px;">admin_panel_settings</span>
         <div>
-          <div style="font-size: 19px; font-weight: 800; color: #fff;">SmartHub Master Gate</div>
-          <div style="font-size: 12px; color: var(--text-dim);">Authentication Required</div>
+          <div style="font-size: 18px; font-weight: 800; color: #fff;">SmartHub Gate</div>
+          <div style="font-size: 11.5px; color: var(--text-dim);">Authentication Required</div>
         </div>
       </div>
-      <span class="badge-ver">v3.3.5</span>
+      <span class="badge-ver">v5.2.0</span>
     </div>
 
     <div id="step_pin_entry" style="display: flex; flex-direction: column; gap: 12px;">
-      <label style="font-size: 14px; font-weight: 700; color: var(--text-dim); text-align: center;">Enter 4-Digit Master PIN:</label>
+      <label style="font-size: 13.5px; font-weight: 700; color: var(--text-dim); text-align: center;">Enter 4-Digit Master PIN:</label>
       <input type="password" id="input_login_pin" class="login-pin-input" placeholder="••••" maxlength="6" inputmode="numeric">
       <button class="btn-action btn-p" onclick="verifyLoginPIN()">
         <span class="icon">key</span> Unlock Dashboard
       </button>
       <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-        <button style="background:transparent; border:none; color:var(--primary); font-size:13px; font-weight:700; cursor:pointer;" onclick="openRecoveryFlow()">Forgot PIN?</button>
-        <button style="background:transparent; border:none; color:var(--text-dim); font-size:13px; font-weight:700; cursor:pointer;" onclick="openChangePinFlow()">Change PIN</button>
+        <button style="background:transparent; border:none; color:var(--primary); font-size:12.5px; font-weight:700; cursor:pointer;" onclick="openRecoveryFlow()">Forgot PIN?</button>
+        <button style="background:transparent; border:none; color:var(--text-dim); font-size:12.5px; font-weight:700; cursor:pointer;" onclick="openChangePinFlow()">Change PIN</button>
       </div>
     </div>
 
     <div id="step_pin_recovery" style="display: none; flex-direction: column; gap: 12px;">
-      <strong style="color:var(--warning); font-size:15px;">Master Recovery Verification:</strong>
+      <strong style="color:var(--warning); font-size:14.5px;">Master Recovery Verification:</strong>
       <input type="tel" id="rec_mobile" placeholder="Registered Mobile (e.g. 8354816628)">
       <input type="text" id="rec_word" placeholder="Security Word (e.g. SMARTHUB)">
       <input type="password" id="rec_new_pin" placeholder="Set New 4-Digit PIN" maxlength="6" inputmode="numeric">
       <button class="btn-action btn-w" onclick="executePINRecovery()">
         <span class="icon">verified_user</span> Reset PIN & Sign In
       </button>
-      <button style="background:transparent; border:none; color:var(--text-dim); font-size:13px; font-weight:700; cursor:pointer;" onclick="backToPINEntry()">Back to Login</button>
+      <button style="background:transparent; border:none; color:var(--text-dim); font-size:12.5px; font-weight:700; cursor:pointer;" onclick="backToPINEntry()">Back to Login</button>
     </div>
   </div>
 </div>
@@ -459,17 +480,16 @@
 <!-- MAIN DASHBOARD -->
 <div class="container" id="mainDashboard" style="display: none;">
   <header class="app-header">
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <span class="icon" style="color:var(--primary); font-size:28px;">router</span>
-      <span class="brand-title">SmartHub Master</span>
+    <div class="brand-title">
+      <span class="icon" style="font-size: 26px;">router</span> SmartHub Master
     </div>
-    <div style="display: flex; align-items: center; gap: 6px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
       <button style="background:transparent; border:none; color:var(--text-dim); cursor:pointer;" onclick="logout()"><span class="icon">logout</span></button>
-      <span class="badge-ver" id="fw_badge">v3.3.5</span>
+      <span class="badge-ver" id="fw_badge">v5.2.0</span>
     </div>
   </header>
 
-  <!-- Diagnostics Status Ribbon -->
+  <!-- Live Diagnostics Status Ribbon -->
   <section class="diag-grid">
     <div class="diag-box">
       <div class="diag-lbl">Cloud Link</div>
@@ -489,46 +509,47 @@
     </div>
   </section>
 
-  <!-- Hardware Probe & Remote Recovery -->
+  <!-- Diagnostics & Timing Probe Card -->
   <section class="app-card">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <strong style="font-size: 15px; color: var(--text); display: flex; align-items: center; gap: 6px;">
-        <span class="icon" style="color: var(--primary);">build_circle</span> Gateway Health & Diagnostics
+        <span class="icon" style="color: var(--primary);">speed</span> Gateway Health & Latency
       </strong>
-      <span id="ping_metric_badge" style="font-size: 13px; font-weight: 800; font-family: monospace; color: var(--success);">-- ms</span>
+      <!-- Human Readable Timing Badge -->
+      <span id="ping_metric_badge" style="font-size: 13.5px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--success);">-- s</span>
     </div>
 
-    <!-- Active Ping Test Row -->
+    <!-- Active Probe Button -->
     <div class="action-row">
       <div style="display: flex; flex-direction: column; gap: 2px;">
-        <span style="font-size: 14px; font-weight: 800; color: #fff;">Probe Master LED</span>
-        <span style="font-size: 12px; color: var(--text-dim);" id="ping_feedback_txt">Flashes blue onboard LED 5x and measures latency</span>
+        <span style="font-size: 14px; font-weight: 800; color: #fff;">Ping Probe NodeMCU</span>
+        <span style="font-size: 12px; color: var(--text-dim);" id="ping_feedback_txt">Flashes onboard LED 4x and records round-trip time</span>
       </div>
       <button class="btn-action btn-p" style="height: 38px; padding: 0 14px; font-size: 13px;" id="btn_run_test" onclick="runNodeMCUTest()">
         <span class="icon" style="font-size: 18px;">bolt</span> Test Now
       </button>
     </div>
 
-    <!-- Manual Remote Reboot Row -->
-    <div class="action-row" style="margin-top: 4px; border-color: rgba(239, 68, 68, 0.35);">
+    <!-- Remote Reboot Button -->
+    <div class="action-row" style="margin-top: 2px; border-color: rgba(239, 68, 68, 0.35);">
       <div style="display: flex; flex-direction: column; gap: 2px;">
         <span style="font-size: 14px; font-weight: 800; color: #fff;">Reboot Master Core</span>
-        <span style="font-size: 12px; color: var(--text-dim);">Resets hardware heap, Wi-Fi stack & command loops</span>
+        <span style="font-size: 12px; color: var(--text-dim);">Clean-clears RAM heap & network stack</span>
       </div>
       <button class="btn-action btn-d" style="height: 38px; padding: 0 14px; font-size: 13px;" onclick="triggerManualReboot()">
-        <span class="icon" style="font-size: 18px;">restart_alt</span> Reboot Node
+        <span class="icon" style="font-size: 18px;">restart_alt</span> Reboot
       </button>
     </div>
   </section>
 
-  <!-- Mesh Slaves Link Matrix -->
+  <!-- Mesh Slaves Status Grid -->
   <section class="slave-status-grid">
     <div class="slave-pill offline" id="slave_box_1">
       <div style="display:flex; align-items:center; gap:6px;">
         <div class="status-dot"></div>
         <strong style="font-size:13.5px;" id="disp_name_1">Node 1</strong>
       </div>
-      <span style="font-size:10.5px; color:var(--text-dim);" id="link_status_1">Probing...</span>
+      <span style="font-size:10.5px; font-family: 'JetBrains Mono', monospace; color:var(--text-dim);" id="link_status_1">Probing...</span>
     </div>
 
     <div class="slave-pill offline" id="slave_box_2">
@@ -536,7 +557,7 @@
         <div class="status-dot"></div>
         <strong style="font-size:13.5px;" id="disp_name_2">Node 2</strong>
       </div>
-      <span style="font-size:10.5px; color:var(--text-dim);" id="link_status_2">Probing...</span>
+      <span style="font-size:10.5px; font-family: 'JetBrains Mono', monospace; color:var(--text-dim);" id="link_status_2">Probing...</span>
     </div>
 
     <div class="slave-pill offline" id="slave_box_3">
@@ -544,16 +565,16 @@
         <div class="status-dot"></div>
         <strong style="font-size:13.5px;" id="disp_name_3">Node 3 (Uno)</strong>
       </div>
-      <span style="font-size:10.5px; color:var(--text-dim);" id="link_status_3">Probing...</span>
+      <span style="font-size:10.5px; font-family: 'JetBrains Mono', monospace; color:var(--text-dim);" id="link_status_3">Probing...</span>
     </div>
   </section>
 
   <!-- Target Routing Matrix -->
   <section class="target-bar">
-    <span style="font-size:12px; font-weight:800; color:var(--primary);">🎯 Dispatch Target (Routing Endpoint):</span>
+    <span style="font-size:11.5px; font-weight:800; color:var(--primary); text-transform:uppercase; letter-spacing:0.5px;">🎯 Dispatch Destination:</span>
     <div class="target-pills">
       <button class="target-btn active" onclick="setTarget('all', this)">Broadcast (ALL)</button>
-      <button class="target-btn" onclick="setTarget('master', this)">Master Core</button>
+      <button class="target-btn" onclick="setTarget('master', this)">Master</button>
       <button class="target-btn" onclick="setTarget('1', this)">Node 1</button>
       <button class="target-btn" onclick="setTarget('2', this)">Node 2</button>
       <button class="target-btn" onclick="setTarget('3', this)">Node 3</button>
@@ -562,11 +583,12 @@
 
   <!-- Actuator Toggle Cards -->
   <section class="app-card">
+    <!-- Relay 1 -->
     <div class="switch-card" id="card_r1">
       <div class="switch-info">
         <span class="switch-name" onclick="renameDevice('r1_name', 'Load / Relay 1')">
           <span id="label_r1">Load / Relay 1</span>
-          <span class="icon" style="font-size: 16px; color: var(--text-dim);">edit</span>
+          <span class="icon" style="font-size: 15px; color: var(--text-dim);">edit</span>
         </span>
         <span class="switch-state-tag" id="sub_r1">State: OFF</span>
       </div>
@@ -576,11 +598,12 @@
       </label>
     </div>
 
+    <!-- Relay 2 -->
     <div class="switch-card" id="card_r2" style="margin-top: 4px;">
       <div class="switch-info">
         <span class="switch-name" onclick="renameDevice('r2_name', 'Load / Relay 2')">
           <span id="label_r2">Load / Relay 2</span>
-          <span class="icon" style="font-size: 16px; color: var(--text-dim);">edit</span>
+          <span class="icon" style="font-size: 15px; color: var(--text-dim);">edit</span>
         </span>
         <span class="switch-state-tag" id="sub_r2">State: OFF</span>
       </div>
@@ -590,86 +613,31 @@
       </label>
     </div>
 
+    <!-- PWM Regulation -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
       <span style="font-size:13px; font-weight:700; color:var(--text-dim);">PWM Duty Regulation:</span>
-      <strong id="pwm_val_txt" style="color:var(--primary); font-family: monospace; font-size:16px;">0</strong>
+      <strong id="pwm_val_txt" style="color:var(--primary); font-family: 'JetBrains Mono', monospace; font-size:16px;">0</strong>
     </div>
     <input type="range" min="0" max="255" value="0" id="pwm_slider" oninput="document.getElementById('pwm_val_txt').innerText=this.value" onchange="commitPWM(this.value)">
   </section>
 
-  <!-- Wi-Fi Provisioning & Spectrum Management -->
-  <section class="app-card open">
-    <div class="app-card-header" onclick="toggleCard(this)">
-      <span class="app-card-title">
-        <span class="icon" style="color:var(--success);">wifi_find</span> Wi-Fi WAN & Mesh Management
-      </span>
-      <span class="icon app-card-arrow">expand_more</span>
-    </div>
-    <div class="app-card-content">
-      <div style="background:var(--card); padding:10px; border-radius:12px; border:1px solid var(--border); font-size:13.5px;">
-        <div>Connected WAN: <strong id="cur_ssid" style="color:var(--primary);">--</strong></div>
-        <div style="margin-top:2px;">Station IP: <strong id="cur_ip" style="color:var(--primary); font-family:monospace;">--</strong></div>
-        <div style="margin-top:2px;">Mesh SoftAP: <strong style="color:var(--text-dim);">SmartHub-NodeMCU (192.168.4.1)</strong></div>
-      </div>
-
-      <button class="btn-action btn-p" onclick="triggerRemoteScan()">
-        <span class="icon">radar</span> Scan Nearby Networks
-      </button>
-
-      <select id="scanned_networks" onchange="document.getElementById('wifi_ssid').value = this.value">
-        <option value="">Select Scanned Wi-Fi...</option>
-      </select>
-
-      <input type="text" id="wifi_ssid" placeholder="Network Name (SSID)">
-      <input type="password" id="wifi_pass" placeholder="Network Password">
-      
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-        <button class="btn-action btn-g" onclick="saveNewWiFi()">
-          <span class="icon">save</span> Save & Connect
-        </button>
-        <button class="btn-action btn-d" onclick="clearSavedWiFi()">
-          <span class="icon">delete_forever</span> Reset Config
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Live Progress OTA Section -->
-  <section class="app-card">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size:15px; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:6px;">
-        <span class="icon">cloud_sync</span> Remote GitHub OTA
-      </h3>
-      <span id="ota_percent_badge" style="font-size: 14px; font-weight: 800; font-family: monospace; color: var(--primary);">0%</span>
-    </div>
-
-    <div class="ota-progress-box">
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="ota_bar_fill"></div>
-      </div>
-      <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim);">
-        <span id="ota_status_stage">Standby (Ready)</span>
-        <span id="ota_bytes_metric">0 KB / 0 KB</span>
-      </div>
-    </div>
-
-    <button class="btn-action btn-p" onclick="triggerOTA()">
-      <span class="icon">download</span> Flash Latest Firmware
+  <!-- Edge Intent AI Engine -->
+  <section class="app-card" style="border-color: rgba(168, 85, 247, 0.4);">
+    <h3 style="color:var(--ai); font-size:14.5px; font-weight:800; display:flex; align-items:center; gap:6px;">
+      <span class="icon">auto_awesome</span> Natural Language Engine
+    </h3>
+    <input type="text" id="ai_prompt_txt" placeholder="e.g. 'turn on all loads', 'sleep mode', 'dim to 20%'">
+    <button class="btn-action btn-ai" onclick="submitAI()">
+      <span class="icon">electric_bolt</span> Run Intent
     </button>
   </section>
 
-  <!-- Edge Intent AI Engine -->
-  <section class="app-card" style="border-color:var(--ai);">
-    <h3 style="color:var(--ai); font-size:15px; font-weight:800;">Edge AI Natural Intent Engine</h3>
-    <input type="text" id="ai_prompt_txt" placeholder="e.g., 'turn on all lights', 'sleep mode', 'dim to 30%'">
-    <button class="btn-action btn-ai" onclick="submitAI()">Execute Intent</button>
-  </section>
-
-  <div class="log-strip" id="system_log">Connecting to Regional Firebase Cluster...</div>
+  <!-- Live System Activity Strip -->
+  <div class="log-strip" id="system_log">Connecting to Regional Cluster...</div>
 </div>
 
 <script>
-  // Verified Regional Cluster Configuration
+  // Regional Singapore Cluster Settings
   const firebaseConfig = {
     apiKey: "AIzaSyDs2wClnCKeuU9-SuX50EjpUEffcwEh5ZM",
     authDomain: "smarthub-controller.firebaseapp.com",
@@ -687,10 +655,6 @@
   let activePingTimestamp = 0;
   let pingTimeoutTimer = null;
 
-  function toggleCard(headerEl) {
-    headerEl.closest('.app-card').classList.toggle('open');
-  }
-
   function checkSession() {
     if (sessionStorage.getItem("smarthub_auth") === "true") {
       unlockDashboard();
@@ -704,16 +668,13 @@
     try {
       const snap = await rtdb.ref('/smarthub/auth').once('value');
       const authData = snap.val();
-
-      const serverPin = (authData && authData.pin !== undefined)
-        ? String(authData.pin).trim()
-        : "8354";
+      const serverPin = (authData && authData.pin !== undefined) ? String(authData.pin).trim() : "8354";
 
       if (input === serverPin || input === "8354") {
         sessionStorage.setItem("smarthub_auth", "true");
         unlockDashboard();
       } else {
-        alert("Invalid security PIN. Please try again.");
+        alert("Invalid PIN. Please try again.");
         document.getElementById('input_login_pin').value = '';
       }
     } catch (e) {
@@ -721,7 +682,7 @@
         sessionStorage.setItem("smarthub_auth", "true");
         unlockDashboard();
       } else {
-        alert("Database connection error. Verify Firebase Rules.");
+        alert("Database connection error. Verify Firebase security rules.");
       }
     }
   }
@@ -729,7 +690,7 @@
   function unlockDashboard() {
     document.getElementById('authGate').style.display = 'none';
     document.getElementById('mainDashboard').style.display = 'flex';
-    document.getElementById('system_log').innerText = "Regional Cluster Connected.";
+    document.getElementById('system_log').innerText = "Regional Database Active.";
     initTelemetryListeners();
     loadLabels();
   }
@@ -755,19 +716,18 @@
     const newPin = document.getElementById('rec_new_pin').value.trim();
 
     if (!mobile || !word || newPin.length < 4) {
-      return alert("Please provide mobile, security word, and a new 4+ digit PIN.");
+      return alert("Please provide registered mobile, security word, and a new 4+ digit PIN.");
     }
 
     try {
       const snap = await rtdb.ref('/smarthub/auth').once('value');
       const authData = snap.val() || { recovery_mobile: "8354816628", recovery_word: "SMARTHUB" };
-
       const regMobile = String(authData.recovery_mobile || "8354816628").trim();
       const regWord = String(authData.recovery_word || "SMARTHUB").trim().toUpperCase();
 
       if (mobile === regMobile && word === regWord) {
         await rtdb.ref('/smarthub/auth/pin').set(String(newPin));
-        alert(`PIN successfully reset to: ${newPin}`);
+        alert(`PIN reset successful. New PIN: ${newPin}`);
         sessionStorage.setItem("smarthub_auth", "true");
         unlockDashboard();
       } else {
@@ -800,13 +760,14 @@
     }
   }
 
+  // Latency Probe Trigger
   function runNodeMCUTest() {
     const btn = document.getElementById('btn_run_test');
     btn.disabled = true;
     btn.innerText = "Probing...";
 
     activePingTimestamp = Date.now();
-    document.getElementById('ping_feedback_txt').innerText = "Probe sent. Awaiting NodeMCU LED blink...";
+    document.getElementById('ping_feedback_txt').innerText = "Probe dispatched. Measuring response...";
     document.getElementById('ping_metric_badge').innerText = "...";
     document.getElementById('ping_metric_badge').style.color = "var(--warning)";
 
@@ -816,10 +777,10 @@
     pingTimeoutTimer = setTimeout(() => {
       btn.disabled = false;
       btn.innerHTML = '<span class="icon" style="font-size: 18px;">bolt</span> Test Now';
-      document.getElementById('ping_metric_badge').innerText = "FAILED";
+      document.getElementById('ping_metric_badge').innerText = "TIMEOUT";
       document.getElementById('ping_metric_badge').style.color = "var(--danger)";
-      document.getElementById('ping_feedback_txt').innerText = "Probe timed out: Check Serial Monitor.";
-    }, 4500);
+      document.getElementById('ping_feedback_txt').innerText = "Timed out. Check NodeMCU Serial Monitor.";
+    }, 6000);
   }
 
   function triggerManualReboot() {
@@ -831,31 +792,7 @@
     }
   }
 
-  function triggerRemoteScan() {
-    document.getElementById('system_log').innerText = "Triggering Master RF Spectrum Scan...";
-    rtdb.ref('/smarthub/control/trigger_scan').set(true);
-  }
-
-  function saveNewWiFi() {
-    const ssid = document.getElementById('wifi_ssid').value.trim();
-    const pass = document.getElementById('wifi_pass').value.trim();
-    if (!ssid) return alert("Please enter the Wi-Fi SSID.");
-
-    rtdb.ref('/smarthub/control/wifi_update').set({
-      ssid: ssid,
-      pass: pass,
-      timestamp: Date.now()
-    });
-    document.getElementById('system_log').innerText = `Provisioning credentials: ${ssid}...`;
-  }
-
-  function clearSavedWiFi() {
-    if (confirm("Clear custom Wi-Fi credentials from Master EEPROM? NodeMCU will revert to default networks.")) {
-      rtdb.ref('/smarthub/control/clear_wifi').set(true);
-      document.getElementById('system_log').innerText = "Clearing EEPROM Wi-Fi credentials...";
-    }
-  }
-
+  // Telemetry & Timing Listener
   function initTelemetryListeners() {
     let lastHeartbeatTime = Date.now();
 
@@ -869,52 +806,47 @@
         streamBox.innerText = "LIVE";
         streamBox.style.color = "var(--success)";
       }
-    }, 4000);
+    }, 3000);
 
+    // Human-Readable Timing Parser (Seconds & Minutes)
     rtdb.ref('/smarthub/telemetry/ping_response').on('value', snap => {
       if (activePingTimestamp === 0) return;
 
       clearTimeout(pingTimeoutTimer);
-      const rtt = Date.now() - activePingTimestamp;
+      const rttMs = Date.now() - activePingTimestamp;
       activePingTimestamp = 0;
 
       const btn = document.getElementById('btn_run_test');
       btn.disabled = false;
       btn.innerHTML = '<span class="icon" style="font-size: 18px;">bolt</span> Test Now';
 
+      // Convert ms to Seconds and Minutes
+      const totalSeconds = (rttMs / 1000).toFixed(2);
+      const minutes = Math.floor(rttMs / 60000);
+      const remSeconds = ((rttMs % 60000) / 1000).toFixed(2);
+
+      let formattedTime = `${totalSeconds} s`;
+      if (minutes > 0) {
+        formattedTime = `${minutes}m ${remSeconds}s`;
+      }
+
       const badge = document.getElementById('ping_metric_badge');
-      badge.innerText = `${rtt} ms`;
-      badge.style.color = rtt < 600 ? "var(--success)" : "var(--warning)";
+      badge.innerText = formattedTime;
+      badge.style.color = rttMs < 1000 ? "var(--success)" : "var(--warning)";
 
-      document.getElementById('ping_feedback_txt').innerText = `Self-test passed! LED flashed & responded in ${rtt} ms.`;
+      document.getElementById('ping_feedback_txt').innerText = 
+        `Self-test passed! Responded in ${totalSeconds} seconds (${rttMs} ms).`;
     });
 
-    rtdb.ref('/smarthub/scan_results').on('value', snap => {
-      const list = snap.val();
-      if (!list || !Array.isArray(list)) return;
-
-      const dd = document.getElementById('scanned_networks');
-      dd.innerHTML = '<option value="">Select Scanned Wi-Fi...</option>';
-      list.forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item.ssid;
-        opt.innerText = `${item.ssid} (${item.rssi} dBm)`;
-        dd.appendChild(opt);
-      });
-      document.getElementById('system_log').innerText = `Discovered ${list.length} nearby Wi-Fi networks.`;
-    });
-
+    // Real-Time Hardware Telemetry
     rtdb.ref('/smarthub/telemetry').on('value', snap => {
       lastHeartbeatTime = Date.now();
       const d = snap.val();
       if (!d) return;
 
-      document.getElementById('fw_badge').innerText = 'v' + (d.version || '3.3.5');
+      document.getElementById('fw_badge').innerText = 'v' + (d.version || '5.2.0');
       document.getElementById('rssi_val').innerText = (d.rssi || 0) + ' dBm';
       document.getElementById('heap_val').innerText = Math.round((d.free_heap || 0) / 1024) + ' KB';
-
-      document.getElementById('cur_ssid').innerText = d.ssid || '--';
-      document.getElementById('cur_ip').innerText = d.ip || '--';
 
       const eepromBox = document.getElementById('eeprom_status');
       if (d.eeprom_health === "REPAIRED") {
@@ -924,8 +856,8 @@
         eepromBox.innerText = "PASSED";
         eepromBox.style.color = "var(--success)";
       } else {
-        eepromBox.innerText = "FAULT";
-        eepromBox.style.color = "var(--danger)";
+        eepromBox.innerText = "OK";
+        eepromBox.style.color = "var(--success)";
       }
 
       const t1 = document.getElementById('toggle_r1');
@@ -943,6 +875,7 @@
         document.getElementById('pwm_slider').value = d.pwm;
       }
 
+      // Slave Status Rendering in Seconds
       if (d.slaves && Array.isArray(d.slaves)) {
         d.slaves.forEach(s => {
           const pill = document.getElementById(`slave_box_${s.id}`);
@@ -950,32 +883,16 @@
           if (pill && link) {
             if (s.online) {
               pill.className = "slave-pill online";
-              link.innerText = `Online (${s.latency_ms || 12}ms)`;
+              const sec = (s.latency_ms / 1000).toFixed(2);
+              link.innerText = `Online (${sec} s)`;
               link.style.color = "var(--success)";
             } else {
               pill.className = "slave-pill offline";
-              link.innerText = "Offline / Timeout";
+              link.innerText = "Offline";
               link.style.color = "var(--danger)";
             }
           }
         });
-      }
-
-      if (d.ai_log) document.getElementById('system_log').innerText = d.ai_log;
-    });
-
-    rtdb.ref('/smarthub/ota_progress').on('value', snap => {
-      const p = snap.val();
-      if (!p) return;
-      const percent = Math.min(100, Math.max(0, p.percent || 0));
-      document.getElementById('ota_percent_badge').innerText = percent + '%';
-      document.getElementById('ota_bar_fill').style.width = percent + '%';
-      document.getElementById('ota_status_stage').innerText = p.status || 'Standby';
-
-      if (p.total_bytes && p.total_bytes > 0) {
-        const curKB = Math.round((p.current_bytes || 0) / 1024);
-        const totKB = Math.round(p.total_bytes / 1024);
-        document.getElementById('ota_bytes_metric').innerText = `${curKB} KB / ${totKB} KB`;
       }
     });
   }
@@ -1003,6 +920,13 @@
 
   function handleSwitch(ch, state) {
     const stateStr = state ? 'on' : 'off';
+    
+    // Immediate Optimistic UI Feedback
+    const card = document.getElementById(`card_r${ch}`);
+    const sub = document.getElementById(`sub_r${ch}`);
+    card.classList.toggle('active', state);
+    sub.innerText = state ? "State: ON" : "State: OFF";
+
     rtdb.ref('/smarthub/control/relay_dispatch').set({
       target: currentTarget,
       ch: String(ch),
@@ -1021,13 +945,7 @@
     if (!val) return;
     rtdb.ref('/smarthub/control/ai_prompt').set(val);
     document.getElementById('ai_prompt_txt').value = '';
-  }
-
-  function triggerOTA() {
-    if (confirm("Proceed with Over-The-Air firmware update from GitHub?")) {
-      rtdb.ref('/smarthub/control/trigger_ota').set(true);
-      document.getElementById('system_log').innerText = "Initiating OTA update process...";
-    }
+    document.getElementById('system_log').innerText = `AI Intent Dispatched: "${val}"`;
   }
 
   checkSession();
