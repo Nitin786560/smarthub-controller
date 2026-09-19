@@ -4,12 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#020617">
-  <title>SmartHub Multi-Slave AI Grid</title>
+  <title>SmartHub Unified Control Grid</title>
 
+  <!-- Google Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@600;700;800;900&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,700,1,0&display=swap" rel="stylesheet">
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -56,7 +58,7 @@
 
     .icon {
       font-family: 'Material Symbols Rounded', sans-serif;
-      font-size: 26px;
+      font-size: 24px;
       line-height: 1;
       display: inline-flex;
       align-items: center;
@@ -77,7 +79,6 @@
       font-size: 22px;
       font-weight: 900;
       color: var(--primary);
-      text-shadow: 0 0 10px rgba(56,189,248,0.45);
     }
 
     .badge-ver {
@@ -97,10 +98,9 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
 
-    /* 3-Slave Reactor Status Matrix */
+    /* Multi-Slave Grid Status */
     .slave-status-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -118,12 +118,10 @@
       align-items: center;
       gap: 4px;
     }
-
     .slave-pill.online {
       border-color: var(--success);
-      box-shadow: 0 0 10px rgba(34,197,94,0.3);
+      box-shadow: 0 0 10px rgba(34,197,94,0.25);
     }
-
     .status-dot {
       width: 10px;
       height: 10px;
@@ -132,7 +130,7 @@
     }
     .slave-pill.online .status-dot { background: var(--success); }
 
-    /* Target Selector Bar */
+    /* Target Selector */
     .target-bar {
       background: var(--card);
       border: 2px solid var(--border-bright);
@@ -165,10 +163,101 @@
       border-color: var(--primary);
     }
 
-    .btn-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+    /* Single Interactive Toggle Rows */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+
+    .toggle-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .editable-name {
+      font-size: 16.5px;
+      font-weight: 900;
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .editable-name:hover { text-decoration: underline; }
+
+    .toggle-sub {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    /* iOS Cyber Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #334155;
+      transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 34px;
+      border: 2px solid var(--border);
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+    input:checked + .slider {
+      background-color: var(--success);
+      border-color: #86efac;
+      box-shadow: 0 0 12px rgba(34,197,94,0.4);
+    }
+    input:checked + .slider:before {
+      transform: translateX(28px);
+    }
+
+    /* Inputs & Buttons */
+    input[type="text"], input[type="password"], select {
+      width: 100%;
+      height: 46px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 0 12px;
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      background: var(--card);
+      border-radius: 4px;
+      outline: none;
+      margin: 8px 0;
     }
 
     .btn-action {
@@ -185,23 +274,8 @@
       color: #fff;
     }
     .btn-action:active { transform: scale(0.96); }
-
-    .btn-on { background: var(--success); }
-    .btn-off { background: var(--danger); }
     .btn-p { background: var(--primary); color: #000; }
     .btn-ai { background: var(--ai); color: #fff; }
-
-    input, select {
-      width: 100%;
-      height: 48px;
-      background: var(--card);
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 0 14px;
-      color: #fff;
-      font-size: 15px;
-      outline: none;
-    }
 
     .log-strip {
       background: var(--card);
@@ -225,18 +299,18 @@
 <div class="container">
   <header class="app-header">
     <div style="display: flex; align-items: center; gap: 8px;">
-      <span class="icon" style="color:var(--primary); font-size:30px;">hub</span>
-      <span class="brand-title">SmartHub 3-Uno AI</span>
+      <span class="icon" style="color:var(--primary); font-size:30px;">tune</span>
+      <span class="brand-title">SmartHub Ultimate</span>
     </div>
-    <span class="badge-ver" id="fw_badge">v2.4.0</span>
+    <span class="badge-ver" id="fw_badge">v2.4.5</span>
   </header>
 
-  <!-- 3 Uno Slaves Live Health Monitor -->
+  <!-- 3-Slave Hardware Monitor -->
   <section class="slave-status-grid">
     <div class="slave-pill" id="slave_box_1">
       <div style="display:flex; align-items:center; gap:6px;">
         <div class="status-dot"></div>
-        <strong style="font-size:14px;">Uno-1</strong>
+        <strong style="font-size:14px;" id="slabel_1">Uno-1</strong>
       </div>
       <span style="font-size:11px; color:var(--text-dim);" id="ip_disp_1">.21</span>
     </div>
@@ -244,7 +318,7 @@
     <div class="slave-pill" id="slave_box_2">
       <div style="display:flex; align-items:center; gap:6px;">
         <div class="status-dot"></div>
-        <strong style="font-size:14px;">Uno-2</strong>
+        <strong style="font-size:14px;" id="slabel_2">Uno-2</strong>
       </div>
       <span style="font-size:11px; color:var(--text-dim);" id="ip_disp_2">.22</span>
     </div>
@@ -252,7 +326,7 @@
     <div class="slave-pill" id="slave_box_3">
       <div style="display:flex; align-items:center; gap:6px;">
         <div class="status-dot"></div>
-        <strong style="font-size:14px;">Uno-3</strong>
+        <strong style="font-size:14px;" id="slabel_3">Uno-3</strong>
       </div>
       <span style="font-size:11px; color:var(--text-dim);" id="ip_disp_3">.23</span>
     </div>
@@ -260,7 +334,7 @@
 
   <!-- Target Routing Matrix -->
   <section class="target-bar">
-    <span style="font-size:13px; font-weight:800; color:var(--primary);">🎯 लक्षित यूनिट चुनें (Dispatch Target):</span>
+    <span style="font-size:13px; font-weight:800; color:var(--primary);">🎯 लक्षित यूनिट (Dispatch Target):</span>
     <div class="target-pills">
       <button class="target-btn active" onclick="setTarget('all', this)">सब पर भेजें (ALL)</button>
       <button class="target-btn" onclick="setTarget('1', this)">Uno-1</button>
@@ -269,45 +343,65 @@
     </div>
   </section>
 
-  <!-- Unified Actuator Switches -->
+  <!-- Single Toggle Actuators with In-Place Editable Names -->
   <section class="app-card">
-    <h3 style="font-size:15px; font-weight:900; color:var(--text-dim);">रिले नियंत्रण (लक्षित नोड हेतु)</h3>
-    <div class="btn-grid">
-      <button class="btn-action btn-on" onclick="sendRelay('1', 'on')">R1 चालू (ON)</button>
-      <button class="btn-action btn-off" onclick="sendRelay('1', 'off')">R1 बंद (OFF)</button>
-    </div>
-    <div class="btn-grid" style="margin-top:4px;">
-      <button class="btn-action btn-on" onclick="sendRelay('2', 'on')">R2 चालू (ON)</button>
-      <button class="btn-action btn-off" onclick="sendRelay('2', 'off')">R2 बंद (OFF)</button>
+    <div class="toggle-row">
+      <div class="toggle-meta">
+        <span class="editable-name" onclick="renameDevice('r1_name', 'Relay 1')">
+          <span id="label_relay1">लोड / रिले 1</span>
+          <span class="icon" style="font-size: 16px; color: var(--text-dim);">edit</span>
+        </span>
+        <span class="toggle-sub" id="sub_relay1">स्थिति: बंद</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="switch_r1" onchange="handleToggle(1, this.checked)">
+        <span class="slider"></span>
+      </label>
     </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
-      <span style="font-size:14px; font-weight:800; color:var(--text-dim);">सिंक्रनाइज़्ड PWM रेगुलेशन:</span>
+    <div class="toggle-row">
+      <div class="toggle-meta">
+        <span class="editable-name" onclick="renameDevice('r2_name', 'Relay 2')">
+          <span id="label_relay2">लोड / रिले 2</span>
+          <span class="icon" style="font-size: 16px; color: var(--text-dim);">edit</span>
+        </span>
+        <span class="toggle-sub" id="sub_relay2">स्थिति: बंद</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="switch_r2" onchange="handleToggle(2, this.checked)">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- PWM Regulation -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+      <span style="font-size:14px; font-weight:800; color:var(--text-dim);">PWM रेगुलेशन:</span>
       <strong id="pwm_val_txt" style="color:var(--primary); font-family: monospace;">0</strong>
     </div>
-    <input type="range" min="0" max="255" value="0" oninput="document.getElementById('pwm_val_txt').innerText=this.value" onchange="sendPWM(this.value)">
+    <input type="range" min="0" max="255" value="0" id="pwm_slider" oninput="document.getElementById('pwm_val_txt').innerText=this.value" onchange="commitPWM(this.value)">
   </section>
 
-  <!-- Autonomous AI Intent Engine -->
+  <!-- Edge Intent AI Control -->
   <section class="app-card" style="border-color:var(--ai);">
-    <h3 style="color:var(--ai); font-size:15px; font-weight:900;">AI मल्टी-यूनिट एज कंट्रोल</h3>
-    <input type="text" id="ai_prompt_txt" placeholder="उदा. 'all on', 'sleep mode', 'all off'">
+    <h3 style="color:var(--ai); font-size:15px; font-weight:900;">AI मल्टी-नोड इंटेंट कंट्रोल</h3>
+    <input type="text" id="ai_prompt_txt" placeholder="उदा. 'लाइट जलाओ', 'all off', 'movie night'">
     <button class="btn-action btn-ai" onclick="submitAI()">AI निष्पादित करें</button>
   </section>
 
-  <!-- Dynamic Slave IP Configuration -->
+  <!-- Dynamic Slave IP & Node Setup -->
   <section class="app-card">
-    <h3 style="font-size:15px; font-weight:900; color:var(--warning);">स्लेव IP प्रबंधन (EEPROM Reconfigure)</h3>
+    <h3 style="font-size:15px; font-weight:900; color:var(--warning);">स्लेव नोड प्रबंधन (Configuration)</h3>
     <select id="cfg_slave_sel">
       <option value="1">Uno Unit 1</option>
       <option value="2">Uno Unit 2</option>
       <option value="3">Uno Unit 3</option>
     </select>
-    <input type="text" id="cfg_slave_ip" placeholder="e.g. 192.168.4.21">
-    <button class="btn-action btn-p" onclick="saveSlaveIP()">सुरक्षित करें (Save IP)</button>
+    <input type="text" id="cfg_slave_ip" placeholder="IP पता: उदा. 192.168.4.21">
+    <input type="text" id="cfg_slave_label" placeholder="कस्टम नाम: उदा. पंप रूम">
+    <button class="btn-action btn-p" onclick="saveSlaveConfig()">सेव करें</button>
   </section>
 
-  <div class="log-strip" id="system_log">मल्टी-स्लेव क्लाउड ग्रिड तैयार है।</div>
+  <div class="log-strip" id="system_log">क्लाउड ग्रिड तैयार है।</div>
 </div>
 
 <script>
@@ -325,20 +419,55 @@
   const rtdb = firebase.database();
   let currentTarget = "all";
 
+  function haptic(ms = 35) {
+    if ("vibrate" in navigator) navigator.vibrate(ms);
+  }
+
   function setTarget(t, btn) {
+    haptic(30);
     currentTarget = t;
     document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('system_log').innerText = `लक्षित इकाई सेट: ${t.toUpperCase()}`;
   }
 
+  function renameDevice(key, defaultVal) {
+    const currentName = localStorage.getItem(key) || defaultVal;
+    const newName = prompt("इस लोड / उपकरण का नया नाम दर्ज करें:", currentName);
+    if (newName && newName.trim() !== "") {
+      localStorage.setItem(key, newName.trim());
+      loadCustomLabels();
+    }
+  }
+
+  function loadCustomLabels() {
+    const r1 = localStorage.getItem('r1_name') || 'लोड / रिले 1';
+    const r2 = localStorage.getItem('r2_name') || 'लोड / रिले 2';
+    document.getElementById('label_relay1').innerText = r1;
+    document.getElementById('label_relay2').innerText = r2;
+  }
+  loadCustomLabels();
+
+  // Cloud Telemetry Listener (Instant feedback)
   rtdb.ref('/smarthub/telemetry').on('value', snap => {
     const d = snap.val();
     if (!d) return;
 
-    document.getElementById('fw_badge').innerText = 'v' + (d.version || '2.4.0');
+    document.getElementById('fw_badge').innerText = 'v' + (d.version || '2.4.5');
 
-    // Update 3 Slaves Online Status
+    // Sync physical switch states
+    const s1 = document.getElementById('switch_r1');
+    const s2 = document.getElementById('switch_r2');
+    s1.checked = !!d.master_r1;
+    s2.checked = !!d.master_r2;
+    document.getElementById('sub_relay1').innerText = d.master_r1 ? "स्थिति: चालू (ON)" : "स्थिति: बंद (OFF)";
+    document.getElementById('sub_relay2').innerText = d.master_r2 ? "स्थिति: चालू (ON)" : "स्थिति: बंद (OFF)";
+
+    if (d.pwm !== undefined) {
+      document.getElementById('pwm_val_txt').innerText = d.pwm;
+      document.getElementById('pwm_slider').value = d.pwm;
+    }
+
     if (d.slaves && Array.isArray(d.slaves)) {
       d.slaves.forEach(s => {
         const box = document.getElementById(`slave_box_${s.id}`);
@@ -351,33 +480,44 @@
     if (d.ai_log) document.getElementById('system_log').innerText = d.ai_log;
   });
 
-  function sendRelay(ch, state) {
+  // User Interactive Toggle Handler
+  function handleToggle(channel, isChecked) {
+    haptic(45);
+    const stateStr = isChecked ? 'on' : 'off';
     rtdb.ref('/smarthub/control/relay_dispatch').set({
       target: currentTarget,
-      ch: ch,
-      state: state,
+      ch: String(channel),
+      state: stateStr,
       ts: Date.now()
     });
-    document.getElementById('system_log').innerText = `रिले ${ch} ${state.toUpperCase()} -> [${currentTarget.toUpperCase()}]`;
+    document.getElementById('system_log').innerText = `रिले ${channel} -> ${stateStr.toUpperCase()} [${currentTarget.toUpperCase()}]`;
   }
 
-  function sendPWM(v) {
+  function commitPWM(v) {
+    haptic(30);
     rtdb.ref('/smarthub/control/pwm').set(parseInt(v));
   }
 
   function submitAI() {
+    haptic(40);
     const val = document.getElementById('ai_prompt_txt').value.trim();
     if (!val) return;
     rtdb.ref('/smarthub/control/ai_prompt').set(val);
     document.getElementById('ai_prompt_txt').value = '';
   }
 
-  function saveSlaveIP() {
+  function saveSlaveConfig() {
+    haptic(40);
     const s = document.getElementById('cfg_slave_sel').value;
     const ip = document.getElementById('cfg_slave_ip').value.trim();
-    if (!ip) return;
-    rtdb.ref(`/smarthub/control/config_slave_ip/${s}`).set(ip);
-    document.getElementById('system_log').innerText = `Uno-${s} IP अपडेट भेजा गया: ${ip}`;
+    const lbl = document.getElementById('cfg_slave_label').value.trim();
+
+    if (ip) rtdb.ref(`/smarthub/control/config_slave_ip/${s}`).set(ip);
+    if (lbl) {
+      localStorage.setItem(`slabel_${s}`, lbl);
+      document.getElementById(`slabel_${s}`).innerText = lbl;
+    }
+    document.getElementById('system_log').innerText = `Uno-${s} अपडेट सुरक्षित किया गया।`;
   }
 </script>
 
