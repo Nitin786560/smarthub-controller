@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#020617">
-  <title>SmartHub Unified Control Grid</title>
+  <title>SmartHub AI Ultimate Grid</title>
 
-  <!-- Google Fonts & Icons -->
+  <!-- Google Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@600;700;800;900&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,700,1,0&display=swap" rel="stylesheet">
 
-  <!-- Firebase SDKs -->
+  <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -23,6 +23,7 @@
       --border: #24385a;
       --border-bright: #38bdf8;
       --primary: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.45);
       --success: #22c55e;
       --danger: #ef4444;
       --warning: #f59e0b;
@@ -79,6 +80,7 @@
       font-size: 22px;
       font-weight: 900;
       color: var(--primary);
+      text-shadow: 0 0 10px var(--primary-glow);
     }
 
     .badge-ver {
@@ -98,39 +100,10 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
 
-    /* Multi-Slave Grid Status */
-    .slave-status-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .slave-pill {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 8px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .slave-pill.online {
-      border-color: var(--success);
-      box-shadow: 0 0 10px rgba(34,197,94,0.25);
-    }
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--danger);
-    }
-    .slave-pill.online .status-dot { background: var(--success); }
-
-    /* Target Selector */
+    /* Target Selector Bar */
     .target-bar {
       background: var(--card);
       border: 2px solid var(--border-bright);
@@ -163,84 +136,167 @@
       border-color: var(--primary);
     }
 
-    /* Single Interactive Toggle Rows */
-    .toggle-row {
+    /* Single Ergonomic Toggle Cards */
+    .switch-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
       background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .switch-card.active {
+      border-color: var(--success);
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.25);
     }
 
-    .toggle-meta {
+    .switch-info {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
 
-    .editable-name {
-      font-size: 16.5px;
+    .switch-name {
+      font-size: 17px;
       font-weight: 900;
       color: var(--text);
-      cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+      cursor: pointer;
     }
-    .editable-name:hover { text-decoration: underline; }
 
-    .toggle-sub {
+    .switch-state-tag {
       font-size: 13px;
+      font-weight: 800;
       color: var(--text-dim);
     }
+    .switch-card.active .switch-state-tag {
+      color: var(--success);
+    }
 
-    /* iOS Cyber Toggle Switch */
-    .switch {
+    /* Cyber Ergonomic Toggle */
+    .cyber-toggle {
       position: relative;
+      width: 64px;
+      height: 36px;
       display: inline-block;
-      width: 60px;
-      height: 32px;
       flex-shrink: 0;
     }
-    .switch input {
+    .cyber-toggle input {
       opacity: 0;
       width: 0;
       height: 0;
     }
-    .slider {
+    .cyber-slider {
       position: absolute;
       cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #334155;
-      transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 34px;
-      border: 2px solid var(--border);
+      inset: 0;
+      background-color: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 36px;
+      transition: all 0.25s;
     }
-    .slider:before {
+    .cyber-slider:before {
       position: absolute;
       content: "";
-      height: 22px;
-      width: 22px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      height: 24px;
+      width: 24px;
+      left: 4px;
+      bottom: 4px;
+      background-color: #94a3b8;
       border-radius: 50%;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      transition: all 0.25s;
     }
-    input:checked + .slider {
-      background-color: var(--success);
-      border-color: #86efac;
-      box-shadow: 0 0 12px rgba(34,197,94,0.4);
+    input:checked + .cyber-slider {
+      background-color: rgba(34, 197, 94, 0.2);
+      border-color: var(--success);
     }
-    input:checked + .slider:before {
+    input:checked + .cyber-slider:before {
       transform: translateX(28px);
+      background-color: var(--success);
+      box-shadow: 0 0 12px var(--success);
     }
 
-    /* Inputs & Buttons */
-    input[type="text"], input[type="password"], select {
+    /* Live Progress Bar Components */
+    .ota-progress-box {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 16px;
+      background: #020617;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      border-radius: 8px;
+      transition: width 0.25s ease-out;
+    }
+
+    /* Multi-Slave Status Grid */
+    .slave-status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .slave-pill {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .slave-pill.online {
+      border-color: var(--success);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--danger);
+    }
+    .slave-pill.online .status-dot { background: var(--success); }
+
+    .btn-action {
+      height: 48px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #fff;
+    }
+    .btn-action:active { transform: scale(0.96); }
+    .btn-p { background: var(--primary); color: #000; }
+    .btn-ai { background: var(--ai); color: #fff; }
+
+    input[type="text"], select {
       width: 100%;
       height: 46px;
       background: var(--card);
@@ -259,23 +315,6 @@
       outline: none;
       margin: 8px 0;
     }
-
-    .btn-action {
-      height: 48px;
-      border-radius: 12px;
-      border: none;
-      font-size: 16px;
-      font-weight: 900;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      color: #fff;
-    }
-    .btn-action:active { transform: scale(0.96); }
-    .btn-p { background: var(--primary); color: #000; }
-    .btn-ai { background: var(--ai); color: #fff; }
 
     .log-strip {
       background: var(--card);
@@ -300,17 +339,17 @@
   <header class="app-header">
     <div style="display: flex; align-items: center; gap: 8px;">
       <span class="icon" style="color:var(--primary); font-size:30px;">tune</span>
-      <span class="brand-title">SmartHub Ultimate</span>
+      <span class="brand-title">SmartHub AI Grid</span>
     </div>
-    <span class="badge-ver" id="fw_badge">v2.4.5</span>
+    <span class="badge-ver" id="fw_badge">v2.5.0</span>
   </header>
 
-  <!-- 3-Slave Hardware Monitor -->
+  <!-- 3-Slave Telemetry Grid -->
   <section class="slave-status-grid">
     <div class="slave-pill" id="slave_box_1">
       <div style="display:flex; align-items:center; gap:6px;">
         <div class="status-dot"></div>
-        <strong style="font-size:14px;" id="slabel_1">Uno-1</strong>
+        <strong style="font-size:14px;">Uno-1</strong>
       </div>
       <span style="font-size:11px; color:var(--text-dim);" id="ip_disp_1">.21</span>
     </div>
@@ -318,7 +357,7 @@
     <div class="slave-pill" id="slave_box_2">
       <div style="display:flex; align-items:center; gap:6px;">
         <div class="status-dot"></div>
-        <strong style="font-size:14px;" id="slabel_2">Uno-2</strong>
+        <strong style="font-size:14px;">Uno-2</strong>
       </div>
       <span style="font-size:11px; color:var(--text-dim);" id="ip_disp_2">.22</span>
     </div>
@@ -326,7 +365,7 @@
     <div class="slave-pill" id="slave_box_3">
       <div style="display:flex; align-items:center; gap:6px;">
         <div class="status-dot"></div>
-        <strong style="font-size:14px;" id="slabel_3">Uno-3</strong>
+        <strong style="font-size:14px;">Uno-3</strong>
       </div>
       <span style="font-size:11px; color:var(--text-dim);" id="ip_disp_3">.23</span>
     </div>
@@ -334,71 +373,84 @@
 
   <!-- Target Routing Matrix -->
   <section class="target-bar">
-    <span style="font-size:13px; font-weight:800; color:var(--primary);">🎯 लक्षित यूनिट (Dispatch Target):</span>
+    <span style="font-size:13px; font-weight:800; color:var(--primary);">🎯 लक्षित इकाई चुनें (Dispatch Route):</span>
     <div class="target-pills">
-      <button class="target-btn active" onclick="setTarget('all', this)">सब पर भेजें (ALL)</button>
+      <button class="target-btn active" onclick="setTarget('all', this)">सब पर (ALL)</button>
       <button class="target-btn" onclick="setTarget('1', this)">Uno-1</button>
       <button class="target-btn" onclick="setTarget('2', this)">Uno-2</button>
       <button class="target-btn" onclick="setTarget('3', this)">Uno-3</button>
     </div>
   </section>
 
-  <!-- Single Toggle Actuators with In-Place Editable Names -->
+  <!-- Ergonomic Single Switches -->
   <section class="app-card">
-    <div class="toggle-row">
-      <div class="toggle-meta">
-        <span class="editable-name" onclick="renameDevice('r1_name', 'Relay 1')">
-          <span id="label_relay1">लोड / रिले 1</span>
+    <!-- Relay 1 Toggle -->
+    <div class="switch-card" id="card_r1">
+      <div class="switch-info">
+        <span class="switch-name" onclick="renameDevice('r1_name', 'लोड 1')">
+          <span id="label_r1">लोड / रिले 1</span>
           <span class="icon" style="font-size: 16px; color: var(--text-dim);">edit</span>
         </span>
-        <span class="toggle-sub" id="sub_relay1">स्थिति: बंद</span>
+        <span class="switch-state-tag" id="sub_r1">स्थिति: बंद (OFF)</span>
       </div>
-      <label class="switch">
-        <input type="checkbox" id="switch_r1" onchange="handleToggle(1, this.checked)">
-        <span class="slider"></span>
+      <label class="cyber-toggle">
+        <input type="checkbox" id="toggle_r1" onchange="handleSwitch(1, this.checked)">
+        <span class="cyber-slider"></span>
       </label>
     </div>
 
-    <div class="toggle-row">
-      <div class="toggle-meta">
-        <span class="editable-name" onclick="renameDevice('r2_name', 'Relay 2')">
-          <span id="label_relay2">लोड / रिले 2</span>
+    <!-- Relay 2 Toggle -->
+    <div class="switch-card" id="card_r2" style="margin-top: 4px;">
+      <div class="switch-info">
+        <span class="switch-name" onclick="renameDevice('r2_name', 'लोड 2')">
+          <span id="label_r2">लोड / रिले 2</span>
           <span class="icon" style="font-size: 16px; color: var(--text-dim);">edit</span>
         </span>
-        <span class="toggle-sub" id="sub_relay2">स्थिति: बंद</span>
+        <span class="switch-state-tag" id="sub_r2">स्थिति: बंद (OFF)</span>
       </div>
-      <label class="switch">
-        <input type="checkbox" id="switch_r2" onchange="handleToggle(2, this.checked)">
-        <span class="slider"></span>
+      <label class="cyber-toggle">
+        <input type="checkbox" id="toggle_r2" onchange="handleSwitch(2, this.checked)">
+        <span class="cyber-slider"></span>
       </label>
     </div>
 
     <!-- PWM Regulation -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
       <span style="font-size:14px; font-weight:800; color:var(--text-dim);">PWM रेगुलेशन:</span>
-      <strong id="pwm_val_txt" style="color:var(--primary); font-family: monospace;">0</strong>
+      <strong id="pwm_val_txt" style="color:var(--primary); font-family: monospace; font-size:17px;">0</strong>
     </div>
     <input type="range" min="0" max="255" value="0" id="pwm_slider" oninput="document.getElementById('pwm_val_txt').innerText=this.value" onchange="commitPWM(this.value)">
   </section>
 
-  <!-- Edge Intent AI Control -->
-  <section class="app-card" style="border-color:var(--ai);">
-    <h3 style="color:var(--ai); font-size:15px; font-weight:900;">AI मल्टी-नोड इंटेंट कंट्रोल</h3>
-    <input type="text" id="ai_prompt_txt" placeholder="उदा. 'लाइट जलाओ', 'all off', 'movie night'">
-    <button class="btn-action btn-ai" onclick="submitAI()">AI निष्पादित करें</button>
+  <!-- Real-Time Progress-Tracked OTA Updating -->
+  <section class="app-card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size:16px; font-weight:900; color:var(--primary); display:flex; align-items:center; gap:6px;">
+        <span class="icon">cloud_sync</span> वैश्विक OTA लाइव प्रोग्रेस
+      </h3>
+      <span id="ota_percent_badge" style="font-size: 15px; font-weight: 900; font-family: monospace; color: var(--primary);">0%</span>
+    </div>
+
+    <div class="ota-progress-box">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="ota_bar_fill"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 12.5px; color: var(--text-dim);">
+        <span id="ota_status_stage">स्टैंडबाय (Ready)</span>
+        <span id="ota_bytes_metric">0 KB / 0 KB</span>
+      </div>
+    </div>
+
+    <button class="btn-action btn-p" onclick="triggerOTA()">
+      <span class="icon">download</span> GitHub Releases से फ्लैश करें
+    </button>
   </section>
 
-  <!-- Dynamic Slave IP & Node Setup -->
-  <section class="app-card">
-    <h3 style="font-size:15px; font-weight:900; color:var(--warning);">स्लेव नोड प्रबंधन (Configuration)</h3>
-    <select id="cfg_slave_sel">
-      <option value="1">Uno Unit 1</option>
-      <option value="2">Uno Unit 2</option>
-      <option value="3">Uno Unit 3</option>
-    </select>
-    <input type="text" id="cfg_slave_ip" placeholder="IP पता: उदा. 192.168.4.21">
-    <input type="text" id="cfg_slave_label" placeholder="कस्टम नाम: उदा. पंप रूम">
-    <button class="btn-action btn-p" onclick="saveSlaveConfig()">सेव करें</button>
+  <!-- Edge Intent AI Engine -->
+  <section class="app-card" style="border-color:var(--ai);">
+    <h3 style="color:var(--ai); font-size:15px; font-weight:900;">AI नेचुरल लैंग्वेज एज कंट्रोल</h3>
+    <input type="text" id="ai_prompt_txt" placeholder="उदा. 'लाइट चालू करो', 'all off', 'night dim'">
+    <button class="btn-action btn-ai" onclick="submitAI()">AI निष्पादित करें</button>
   </section>
 
   <div class="log-strip" id="system_log">क्लाउड ग्रिड तैयार है।</div>
@@ -428,40 +480,41 @@
     currentTarget = t;
     document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('system_log').innerText = `लक्षित इकाई सेट: ${t.toUpperCase()}`;
+    document.getElementById('system_log').innerText = `लक्षित इकाई: ${t.toUpperCase()}`;
   }
 
   function renameDevice(key, defaultVal) {
     const currentName = localStorage.getItem(key) || defaultVal;
-    const newName = prompt("इस लोड / उपकरण का नया नाम दर्ज करें:", currentName);
+    const newName = prompt("नया कस्टम नाम दर्ज करें:", currentName);
     if (newName && newName.trim() !== "") {
       localStorage.setItem(key, newName.trim());
-      loadCustomLabels();
+      loadLabels();
     }
   }
 
-  function loadCustomLabels() {
-    const r1 = localStorage.getItem('r1_name') || 'लोड / रिले 1';
-    const r2 = localStorage.getItem('r2_name') || 'लोड / रिले 2';
-    document.getElementById('label_relay1').innerText = r1;
-    document.getElementById('label_relay2').innerText = r2;
+  function loadLabels() {
+    document.getElementById('label_r1').innerText = localStorage.getItem('r1_name') || 'लोड / रिले 1';
+    document.getElementById('label_r2').innerText = localStorage.getItem('r2_name') || 'लोड / रिले 2';
   }
-  loadCustomLabels();
+  loadLabels();
 
-  // Cloud Telemetry Listener (Instant feedback)
+  // Cloud Telemetry Listener
   rtdb.ref('/smarthub/telemetry').on('value', snap => {
     const d = snap.val();
     if (!d) return;
 
-    document.getElementById('fw_badge').innerText = 'v' + (d.version || '2.4.5');
+    document.getElementById('fw_badge').innerText = 'v' + (d.version || '2.5.0');
 
-    // Sync physical switch states
-    const s1 = document.getElementById('switch_r1');
-    const s2 = document.getElementById('switch_r2');
-    s1.checked = !!d.master_r1;
-    s2.checked = !!d.master_r2;
-    document.getElementById('sub_relay1').innerText = d.master_r1 ? "स्थिति: चालू (ON)" : "स्थिति: बंद (OFF)";
-    document.getElementById('sub_relay2').innerText = d.master_r2 ? "स्थिति: चालू (ON)" : "स्थिति: बंद (OFF)";
+    // Sync Toggles & Card Glow States
+    const t1 = document.getElementById('toggle_r1');
+    const t2 = document.getElementById('toggle_r2');
+    t1.checked = !!d.master_r1;
+    t2.checked = !!d.master_r2;
+
+    document.getElementById('card_r1').classList.toggle('active', !!d.master_r1);
+    document.getElementById('card_r2').classList.toggle('active', !!d.master_r2);
+    document.getElementById('sub_r1').innerText = d.master_r1 ? "स्थिति: चालू (ON)" : "स्थिति: बंद (OFF)";
+    document.getElementById('sub_r2').innerText = d.master_r2 ? "स्थिति: चालू (ON)" : "स्थिति: बंद (OFF)";
 
     if (d.pwm !== undefined) {
       document.getElementById('pwm_val_txt').innerText = d.pwm;
@@ -480,17 +533,37 @@
     if (d.ai_log) document.getElementById('system_log').innerText = d.ai_log;
   });
 
-  // User Interactive Toggle Handler
-  function handleToggle(channel, isChecked) {
+  // Dedicated Real-Time 0–100% OTA Progress Listener
+  rtdb.ref('/smarthub/ota_progress').on('value', snap => {
+    const p = snap.val();
+    if (!p) return;
+
+    const percent = Math.min(100, Math.max(0, p.percent || 0));
+    document.getElementById('ota_percent_badge').innerText = percent + '%';
+    document.getElementById('ota_bar_fill').style.width = percent + '%';
+    document.getElementById('ota_status_stage').innerText = p.status || 'स्टैंडबाय';
+
+    if (p.total_bytes && p.total_bytes > 0) {
+      const curKB = Math.round((p.current_bytes || 0) / 1024);
+      const totKB = Math.round(p.total_bytes / 1024);
+      document.getElementById('ota_bytes_metric').innerText = `${curKB} KB / ${totKB} KB`;
+    }
+
+    if (p.status === "Update Complete! Rebooting...") {
+      document.getElementById('system_log').innerText = "फर्मवेयर सफलतापूर्वक लिखा गया! नोड रीबूट हो रहा है...";
+    }
+  });
+
+  function handleSwitch(ch, state) {
     haptic(45);
-    const stateStr = isChecked ? 'on' : 'off';
+    const stateStr = state ? 'on' : 'off';
     rtdb.ref('/smarthub/control/relay_dispatch').set({
       target: currentTarget,
-      ch: String(channel),
+      ch: String(ch),
       state: stateStr,
       ts: Date.now()
     });
-    document.getElementById('system_log').innerText = `रिले ${channel} -> ${stateStr.toUpperCase()} [${currentTarget.toUpperCase()}]`;
+    document.getElementById('system_log').innerText = `रिले ${ch} -> ${stateStr.toUpperCase()} [${currentTarget.toUpperCase()}]`;
   }
 
   function commitPWM(v) {
@@ -506,18 +579,12 @@
     document.getElementById('ai_prompt_txt').value = '';
   }
 
-  function saveSlaveConfig() {
-    haptic(40);
-    const s = document.getElementById('cfg_slave_sel').value;
-    const ip = document.getElementById('cfg_slave_ip').value.trim();
-    const lbl = document.getElementById('cfg_slave_label').value.trim();
-
-    if (ip) rtdb.ref(`/smarthub/control/config_slave_ip/${s}`).set(ip);
-    if (lbl) {
-      localStorage.setItem(`slabel_${s}`, lbl);
-      document.getElementById(`slabel_${s}`).innerText = lbl;
+  function triggerOTA() {
+    haptic(60);
+    if (confirm("क्या आप GitHub Releases से फर्मवेयर अपडेट लोड करना चाहते हैं?")) {
+      rtdb.ref('/smarthub/control/trigger_ota').set(true);
+      document.getElementById('system_log').innerText = "OTA फ्लैशिंग शुरू की गई...";
     }
-    document.getElementById('system_log').innerText = `Uno-${s} अपडेट सुरक्षित किया गया।`;
   }
 </script>
 
