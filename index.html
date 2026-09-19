@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#030712">
-  <title>SmartHub Unified Master</title>
+  <title>SmartHub Universal Master Hub</title>
 
   <!-- Google Fonts & Material Symbols -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -144,7 +144,6 @@
       gap: 6px;
     }
 
-    /* Relay Grid */
     .relay-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -172,7 +171,7 @@
       background: rgba(16, 185, 129, 0.08);
     }
     .switch-card.disabled {
-      opacity: 0.4;
+      opacity: 0.38;
       pointer-events: none;
       filter: grayscale(0.85);
     }
@@ -233,15 +232,14 @@
       box-shadow: 0 0 10px var(--success);
     }
 
-    /* Momentary Trigger Button */
     .btn-momentary {
       width: 100%;
-      height: 32px;
+      height: 30px;
       background: #1e293b;
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--primary);
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 800;
       display: flex;
       align-items: center;
@@ -256,16 +254,15 @@
       color: #030712;
     }
 
-    /* Mode Pill (Toggle vs Momentary) */
     .mode-select-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: var(--surface);
-      padding: 4px 8px;
-      border-radius: 8px;
+      padding: 3px 6px;
+      border-radius: 6px;
       border: 1px solid var(--border);
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 700;
       color: var(--text-dim);
     }
@@ -273,7 +270,7 @@
       background: transparent;
       border: none;
       color: var(--primary);
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 800;
       outline: none;
       cursor: pointer;
@@ -313,6 +310,14 @@
       color: #fff;
       font-size: 13.5px;
       outline: none;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      background: #1e293b;
+      border-radius: 4px;
+      outline: none;
+      accent-color: var(--primary);
     }
 
     .btn-action {
@@ -365,52 +370,77 @@
 </head>
 <body>
 
-<!-- PIN GATE MODAL -->
+<!-- PIN GATEWAY -->
 <div class="modal-overlay" id="authGate">
   <div class="modal-card">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <strong style="color:var(--primary); font-size:17px;">SmartHub Access</strong>
-      <span class="badge-ver">v5.6.0</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid var(--border); padding-bottom:12px;">
+      <div style="display:flex; align-items:center; gap:8px; color:var(--primary);">
+        <span class="icon" style="font-size:28px;">admin_panel_settings</span>
+        <div>
+          <div style="font-size:16.5px; font-weight:800; color:#fff;">SmartHub Access</div>
+          <div style="font-size:11px; color:var(--text-dim);">Authentication Gateway</div>
+        </div>
+      </div>
+      <span class="badge-ver">v6.0.0</span>
     </div>
-    <input type="password" id="input_login_pin" class="login-pin-input" placeholder="••••" maxlength="6" inputmode="numeric">
-    <button class="btn-action btn-p" onclick="verifyLoginPIN()">
-      <span class="icon">key</span> Unlock Dashboard
-    </button>
+
+    <div id="step_pin_entry" style="display: flex; flex-direction: column; gap: 12px;">
+      <label style="font-size: 13px; font-weight: 700; color: var(--text-dim); text-align: center;">Enter Master PIN:</label>
+      <input type="password" id="input_login_pin" class="login-pin-input" placeholder="••••" maxlength="6" inputmode="numeric">
+      <button class="btn-action btn-p" onclick="verifyLoginPIN()">
+        <span class="icon">key</span> Unlock Dashboard
+      </button>
+      <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+        <button style="background:transparent; border:none; color:var(--primary); font-size:12px; font-weight:700; cursor:pointer;" onclick="openRecoveryFlow()">Forgot PIN?</button>
+        <button style="background:transparent; border:none; color:var(--text-dim); font-size:12px; font-weight:700; cursor:pointer;" onclick="openChangePinFlow()">Change PIN</button>
+      </div>
+    </div>
+
+    <div id="step_pin_recovery" style="display: none; flex-direction: column; gap: 12px;">
+      <strong style="color:var(--warning); font-size:14px;">Master Recovery Verification:</strong>
+      <input type="tel" id="rec_mobile" placeholder="Registered Mobile (8354816628)">
+      <input type="text" id="rec_word" placeholder="Security Word (SMARTHUB)">
+      <input type="password" id="rec_new_pin" placeholder="Set New 4-Digit PIN" maxlength="6" inputmode="numeric">
+      <button class="btn-action btn-w" onclick="executePINRecovery()">
+        <span class="icon">verified_user</span> Reset PIN & Access
+      </button>
+      <button style="background:transparent; border:none; color:var(--text-dim); font-size:12px; font-weight:700; cursor:pointer;" onclick="backToPINEntry()">Back to Login</button>
+    </div>
   </div>
 </div>
 
-<!-- DASHBOARD CONTAINER -->
+<!-- MAIN DASHBOARD -->
 <div class="container" id="mainDashboard" style="display: none;">
   <header class="app-header">
     <div class="brand-title">
-      <span class="icon">hub</span> SmartHub Controller
+      <span class="icon">hub</span> SmartHub Universal Grid
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
       <button style="background:transparent; border:none; color:var(--text-dim); cursor:pointer;" onclick="logout()"><span class="icon">logout</span></button>
-      <span class="badge-ver" id="fw_badge">v5.6.0</span>
+      <span class="badge-ver" id="fw_badge">v6.0.0</span>
     </div>
   </header>
 
-  <!-- Diagnostics -->
+  <!-- Diagnostics Status Ribbon -->
   <section class="diag-grid">
     <div class="diag-box"><div class="diag-lbl">Status</div><div class="diag-val" id="stream_status">LIVE</div></div>
     <div class="diag-box"><div class="diag-lbl">SSID</div><div class="diag-val" id="ssid_val">--</div></div>
-    <div class="diag-box"><div class="diag-lbl">Heap</div><div class="diag-val" id="heap_val">0 KB</div></div>
+    <div class="diag-box"><div class="diag-lbl">Free RAM</div><div class="diag-val" id="heap_val">0 KB</div></div>
     <div class="diag-box"><div class="diag-lbl">RSSI</div><div class="diag-val" id="rssi_val">-- dBm</div></div>
   </section>
 
-  <!-- Health & Timing -->
+  <!-- Health & Timing Probe -->
   <section class="app-card">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <strong style="font-size: 14px; display: flex; align-items: center; gap: 6px;">
-        <span class="icon" style="color: var(--primary);">timer</span> NodeMCU Response Latency
+        <span class="icon" style="color: var(--primary);">timer</span> NodeMCU Response Timing
       </strong>
       <span id="ping_metric_badge" style="font-size: 13px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--success);">-- s</span>
     </div>
     <div class="action-row">
       <div style="display: flex; flex-direction: column;">
-        <span style="font-weight: 800; font-size: 13px;">Test NodeMCU Latency</span>
-        <span style="font-size: 11px; color: var(--text-dim);" id="ping_feedback_txt">Flashes onboard LED 4x</span>
+        <span style="font-weight: 800; font-size: 13px;">Self-Test NodeMCU</span>
+        <span style="font-size: 11px; color: var(--text-dim);" id="ping_feedback_txt">Flashes onboard LED 4x and records latency</span>
       </div>
       <button class="btn-action btn-p" style="height: 34px; padding: 0 12px;" id="btn_run_test" onclick="runNodeMCUTest()">
         <span class="icon">bolt</span> Test
@@ -418,12 +448,15 @@
     </div>
   </section>
 
-  <!-- ================= MASTER RELAYS (WITH TOGGLE OR MOMENTARY SWITCH) ================= -->
+  <!-- ================= MASTER RELAYS (WITH INDEPENDENT ENABLE TOGGLES) ================= -->
   <section class="app-card">
     <div class="card-header-bar">
       <div class="card-title" style="color: var(--primary);">
         <span class="icon">dns</span> Master Relays (NodeMCU)
       </div>
+      <label class="checkbox-pill" title="Toggle between Active LOW (standard) and Active HIGH relay modules">
+        <input type="checkbox" id="chk_active_low" onchange="updateInversionState(this.checked)"> Active LOW Board
+      </label>
     </div>
 
     <!-- Enable Config Selection Bar -->
@@ -451,7 +484,7 @@
         </div>
 
         <button class="btn-momentary" id="btn_momentary_r1" style="display:none;" onclick="dispatchRelay('master', 1, true, 'pulse')">
-          <span class="icon" style="font-size:16px;">touch_app</span> Pulse Click (0.5s)
+          <span class="icon" style="font-size:15px;">touch_app</span> Click Pulse (0.5s)
         </button>
 
         <div class="mode-select-row">
@@ -480,7 +513,7 @@
         </div>
 
         <button class="btn-momentary" id="btn_momentary_r2" style="display:none;" onclick="dispatchRelay('master', 2, true, 'pulse')">
-          <span class="icon" style="font-size:16px;">touch_app</span> Pulse Click (0.5s)
+          <span class="icon" style="font-size:15px;">touch_app</span> Click Pulse (0.5s)
         </button>
 
         <div class="mode-select-row">
@@ -509,7 +542,7 @@
         </div>
 
         <button class="btn-momentary" id="btn_momentary_r3" style="display:none;" onclick="dispatchRelay('master', 3, true, 'pulse')">
-          <span class="icon" style="font-size:16px;">touch_app</span> Pulse Click (0.5s)
+          <span class="icon" style="font-size:15px;">touch_app</span> Click Pulse (0.5s)
         </button>
 
         <div class="mode-select-row">
@@ -538,7 +571,7 @@
         </div>
 
         <button class="btn-momentary" id="btn_momentary_r4" style="display:none;" onclick="dispatchRelay('master', 4, true, 'pulse')">
-          <span class="icon" style="font-size:16px;">touch_app</span> Pulse Click (0.5s)
+          <span class="icon" style="font-size:15px;">touch_app</span> Click Pulse (0.5s)
         </button>
 
         <div class="mode-select-row">
@@ -551,6 +584,102 @@
         <span class="switch-state-tag" id="sub_master_r4">Disabled</span>
       </div>
     </div>
+
+    <!-- PWM Regulation -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+      <span style="font-size:12px; font-weight:700; color:var(--text-dim);">Hardware PWM Duty (D5):</span>
+      <strong id="pwm_val_txt" style="color:var(--primary); font-family:'JetBrains Mono'; font-size:14px;">0</strong>
+    </div>
+    <input type="range" min="0" max="255" value="0" id="pwm_slider" oninput="document.getElementById('pwm_val_txt').innerText=this.value" onchange="commitPWM(this.value)">
+  </section>
+
+  <!-- ================= SLAVE NODE 1 (ESP-01 STANDALONE) ================= -->
+  <section class="app-card">
+    <div class="card-header-bar">
+      <div class="card-title">
+        <span class="icon" style="color:var(--success);">router</span> Slave Node 1 (ESP-01 Standalone)
+      </div>
+      <span id="slave_link_1" style="font-size:11px; font-family:'JetBrains Mono'; color:var(--danger); font-weight:700;">Offline</span>
+    </div>
+    <div class="relay-grid">
+      <div class="switch-card" id="card_s1_r1">
+        <div class="switch-top">
+          <span class="switch-name" onclick="renameDevice('s1_r1_name', 'Node 1 Relay (GPIO0)')">
+            <span id="lbl_s1_r1">Node 1 Relay (GPIO0)</span>
+            <span class="icon" style="font-size:13px; color:var(--text-dim);">edit</span>
+          </span>
+          <label class="cyber-toggle">
+            <input type="checkbox" id="toggle_s1_r1" onchange="dispatchRelay('1', 1, this.checked, 'toggle')">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+        <span class="switch-state-tag" id="sub_s1_r1">State: OFF</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SLAVE NODE 2 (ESP-01 STANDALONE) ================= -->
+  <section class="app-card">
+    <div class="card-header-bar">
+      <div class="card-title">
+        <span class="icon" style="color:var(--success);">router</span> Slave Node 2 (ESP-01 Standalone)
+      </div>
+      <span id="slave_link_2" style="font-size:11px; font-family:'JetBrains Mono'; color:var(--danger); font-weight:700;">Offline</span>
+    </div>
+    <div class="relay-grid">
+      <div class="switch-card" id="card_s2_r1">
+        <div class="switch-top">
+          <span class="switch-name" onclick="renameDevice('s2_r1_name', 'Node 2 Relay (GPIO0)')">
+            <span id="lbl_s2_r1">Node 2 Relay (GPIO0)</span>
+            <span class="icon" style="font-size:13px; color:var(--text-dim);">edit</span>
+          </span>
+          <label class="cyber-toggle">
+            <input type="checkbox" id="toggle_s2_r1" onchange="dispatchRelay('2', 1, this.checked, 'toggle')">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+        <span class="switch-state-tag" id="sub_s2_r1">State: OFF</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SLAVE NODE 3 (UNO + SENSORS) ================= -->
+  <section class="app-card">
+    <div class="card-header-bar">
+      <div class="card-title">
+        <span class="icon" style="color:var(--warning);">memory</span> Slave Node 3 (Arduino Uno + Sensors)
+      </div>
+      <span id="slave_link_3" style="font-size:11px; font-family:'JetBrains Mono'; color:var(--danger); font-weight:700;">Offline</span>
+    </div>
+    <div class="relay-grid">
+      <div class="switch-card" id="card_s3_r1">
+        <div class="switch-top">
+          <span class="switch-name" onclick="renameDevice('s3_r1_name', 'Uno Relay 1 (Pin 7)')">
+            <span id="lbl_s3_r1">Uno Relay 1 (Pin 7)</span>
+            <span class="icon" style="font-size:13px; color:var(--text-dim);">edit</span>
+          </span>
+          <label class="cyber-toggle">
+            <input type="checkbox" id="toggle_s3_r1" onchange="dispatchRelay('3', 1, this.checked, 'toggle')">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+        <span class="switch-state-tag" id="sub_s3_r1">State: OFF</span>
+      </div>
+
+      <div class="switch-card" id="card_s3_r2">
+        <div class="switch-top">
+          <span class="switch-name" onclick="renameDevice('s3_r2_name', 'Uno Relay 2 (Pin 8)')">
+            <span id="lbl_s3_r2">Uno Relay 2 (Pin 8)</span>
+            <span class="icon" style="font-size:13px; color:var(--text-dim);">edit</span>
+          </span>
+          <label class="cyber-toggle">
+            <input type="checkbox" id="toggle_s3_r2" onchange="dispatchRelay('3', 2, this.checked, 'toggle')">
+            <span class="cyber-slider"></span>
+          </label>
+        </div>
+        <span class="switch-state-tag" id="sub_s3_r2">State: OFF</span>
+      </div>
+    </div>
   </section>
 
   <!-- ================= ADVANCED WI-FI CONFIGURATION ================= -->
@@ -559,9 +688,12 @@
       <div class="card-title" style="color:var(--warning);">
         <span class="icon">wifi_settings</span> Master Wi-Fi Management
       </div>
+      <button class="btn-action btn-p" style="height:28px; padding:0 8px; font-size:11px;" onclick="triggerScan()">
+        <span class="icon" style="font-size:15px;">radar</span> Scan RF
+      </button>
     </div>
     <div style="display: flex; flex-direction: column; gap: 8px;">
-      <input type="text" id="wifi_new_ssid" placeholder="Enter New 2.4GHz Wi-Fi SSID">
+      <input type="text" id="wifi_new_ssid" placeholder="Enter 2.4GHz Wi-Fi SSID">
       <input type="password" id="wifi_new_pass" placeholder="Enter Wi-Fi Password">
       <div style="display: flex; gap: 8px;">
         <button class="btn-action btn-p" style="flex:1;" onclick="saveWifiCredentials()">
@@ -572,6 +704,7 @@
         </button>
       </div>
     </div>
+    <div id="scan_results_container" style="display:none; flex-direction:column; gap:4px; margin-top:4px; font-family:'JetBrains Mono'; font-size:11px; max-height:100px; overflow-y:auto; background:var(--surface); padding:8px; border-radius:10px; border:1px solid var(--border);"></div>
   </section>
 </div>
 
@@ -609,6 +742,34 @@
     window.location.reload();
   }
 
+  function openRecoveryFlow() {
+    document.getElementById('step_pin_entry').style.display = 'none';
+    document.getElementById('step_pin_recovery').style.display = 'flex';
+  }
+
+  function backToPINEntry() {
+    document.getElementById('step_pin_recovery').style.display = 'none';
+    document.getElementById('step_pin_entry').style.display = 'flex';
+  }
+
+  async function executePINRecovery() {
+    const mobile = document.getElementById('rec_mobile').value.trim();
+    const word = document.getElementById('rec_word').value.trim().toUpperCase();
+    const newPin = document.getElementById('rec_new_pin').value.trim();
+
+    if (mobile === "8354816628" && word === "SMARTHUB" && newPin.length >= 4) {
+      await rtdb.ref('/smarthub/auth/pin').set(String(newPin));
+      alert("PIN reset successful!");
+      document.getElementById('authGate').style.display = 'none';
+      document.getElementById('mainDashboard').style.display = 'flex';
+      initListeners();
+      loadLabels();
+      loadSwitchModes();
+    } else {
+      alert("Recovery verification failed.");
+    }
+  }
+
   function renameDevice(key, def) {
     const n = prompt("Enter Custom Label:", localStorage.getItem(key) || def);
     if (n) { localStorage.setItem(key, n.trim()); loadLabels(); }
@@ -619,9 +780,12 @@
     document.getElementById('lbl_master_r2').innerText = localStorage.getItem('master_r2_name') || 'Relay 2 (D2)';
     document.getElementById('lbl_master_r3').innerText = localStorage.getItem('master_r3_name') || 'Relay 3 (D6)';
     document.getElementById('lbl_master_r4').innerText = localStorage.getItem('master_r4_name') || 'Relay 4 (D7)';
+    document.getElementById('lbl_s1_r1').innerText = localStorage.getItem('s1_r1_name') || 'Node 1 Relay';
+    document.getElementById('lbl_s2_r1').innerText = localStorage.getItem('s2_r1_name') || 'Node 2 Relay';
+    document.getElementById('lbl_s3_r1').innerText = localStorage.getItem('s3_r1_name') || 'Uno Relay 1';
+    document.getElementById('lbl_s3_r2').innerText = localStorage.getItem('s3_r2_name') || 'Uno Relay 2';
   }
 
-  // Switch between Toggle (latching) and Pulse (momentary click)
   function changeSwitchMode(ch, mode) {
     localStorage.setItem(`mode_r${ch}`, mode);
     applySwitchModeUI(ch, mode);
@@ -655,6 +819,10 @@
     rtdb.ref('/smarthub/control/relay_enable_config').update(p);
   }
 
+  function updateInversionState(isActiveLow) {
+    rtdb.ref('/smarthub/control/relay_enable_config').update({ active_low: isActiveLow });
+  }
+
   function dispatchRelay(targetNode, ch, state, mode = 'toggle') {
     rtdb.ref('/smarthub/control/relay_dispatch').set({
       target: targetNode,
@@ -664,6 +832,10 @@
       pulse_ms: 500,
       ts: Date.now()
     });
+  }
+
+  function commitPWM(v) {
+    rtdb.ref('/smarthub/control/pwm').set(parseInt(v));
   }
 
   function saveWifiCredentials() {
@@ -678,6 +850,13 @@
     if (confirm("Reset EEPROM credentials to factory defaults?")) {
       rtdb.ref('/smarthub/control/clear_wifi').set(true);
     }
+  }
+
+  function triggerScan() {
+    rtdb.ref('/smarthub/control/trigger_scan').set(true);
+    const box = document.getElementById('scan_results_container');
+    box.style.display = "flex";
+    box.innerText = "Scanning RF spectrum...";
   }
 
   function runNodeMCUTest() {
@@ -723,6 +902,10 @@
       document.getElementById('heap_val').innerText = Math.round((d.free_heap || 0) / 1024) + ' KB';
       document.getElementById('ssid_val').innerText = d.ssid || '--';
 
+      if (d.active_low !== undefined) {
+        document.getElementById('chk_active_low').checked = !!d.active_low;
+      }
+
       // Sync Enable States
       [1, 2, 3, 4].forEach(i => {
         const isEn = !!d[`en_r${i}`];
@@ -750,6 +933,33 @@
           sub.innerText = pinState ? "Hardware: ON" : "Hardware: OFF";
         }
       });
+
+      // Sync Slaves
+      if (d.slaves && Array.isArray(d.slaves)) {
+        d.slaves.forEach(s => {
+          const badge = document.getElementById(`slave_link_${s.id}`);
+          if (badge) {
+            if (s.online) {
+              const sec = (s.latency_ms / 1000).toFixed(2);
+              badge.innerText = `Online (${sec} s)`;
+              badge.style.color = "var(--success)";
+            } else {
+              badge.innerText = "Offline";
+              badge.style.color = "var(--danger)";
+            }
+          }
+        });
+      }
+    });
+
+    // Spectrum Scan Results
+    rtdb.ref('/smarthub/scan_results').on('value', snap => {
+      const arr = snap.val();
+      const box = document.getElementById('scan_results_container');
+      if (arr && Array.isArray(arr)) {
+        box.style.display = "flex";
+        box.innerHTML = arr.map(i => `<div>📶 <b>${i.ssid || 'Hidden'}</b> (${i.rssi} dBm)</div>`).join('');
+      }
     });
   }
 </script>
